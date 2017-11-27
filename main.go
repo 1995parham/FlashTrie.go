@@ -16,13 +16,23 @@ import (
 	"net"
 )
 
-func main() {
-	_, ipv4Net, err := net.ParseCIDR("192.0.2.1/24")
+func parseCIDR(cidr string) string {
+	_, ipv4Net, err := net.ParseCIDR(cidr)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(ipv4Net.IP[0])
-	fmt.Println(ipv4Net.IP[1])
-	fmt.Println(ipv4Net.IP[2])
-	fmt.Println(ipv4Net.IP[3])
+
+	size, _ := ipv4Net.Mask.Size()
+	str := ""
+
+	for _, octet := range ipv4Net.IP {
+		str = str + fmt.Sprintf("%08b", octet)
+	}
+	str = str[:size] + "*"
+
+	return str
+}
+
+func main() {
+	fmt.Println(parseCIDR("192.0.2.1/4"))
 }
