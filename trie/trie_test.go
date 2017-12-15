@@ -24,6 +24,10 @@ func TestAdd1(t *testing.T) {
 	if trie.Root.Left.Left.Prefix != "11*" {
 		t.Fatal("Invalid Route Insertation: 11*")
 	}
+
+	if trie.Stride != 3 {
+		t.Fatalf("Invalid stride: 3 != %d", trie.Stride)
+	}
 }
 
 func TestLookup1(t *testing.T) {
