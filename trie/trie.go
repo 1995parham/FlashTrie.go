@@ -13,7 +13,7 @@ package trie
 // Trie represents binary trie for route lookup
 type Trie struct {
 	Root   *Node
-	Stride int
+	Stride uint
 }
 
 // New creates new trie

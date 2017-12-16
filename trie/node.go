@@ -18,5 +18,5 @@ type Node struct {
 	NextHop string
 	Right   *Node
 	Left    *Node
-	height  int
+	height  uint
 }
