@@ -20,7 +20,7 @@ type PCTrie struct {
 
 // New creates new prefix-compresed trie
 func New(t *trie.Trie, compSize int) {
-	nodes := make([]trie.Node, 1<<t.Stride)
+	nodes := t.ToArray()
 
 	for s := compSize - 1; s < len(nodes); s += compSize {
 		for t := s; t < s+compSize-1; t++ {
