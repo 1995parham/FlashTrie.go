@@ -47,4 +47,15 @@ func TestBasic2(t *testing.T) {
 	if bitmap != "101" {
 		t.Fatal("Invalid bitmap")
 	}
+	for i, b := range bitmap {
+		if b == '1' {
+			if len(pctrie.NextHops[i]) == 0 {
+				t.Fatalf("Invalid NextHops at %d\n", i)
+			}
+		} else {
+			if len(pctrie.NextHops[i]) != 0 {
+				t.Fatalf("Invalid NextHops at %d\n", i)
+			}
+		}
+	}
 }
