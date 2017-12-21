@@ -10,7 +10,9 @@
 
 package trie
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestAdd1(t *testing.T) {
 	trie := New()
@@ -39,5 +41,25 @@ func TestLookup1(t *testing.T) {
 
 	if trie.Lookup("11101") != "B" {
 		t.Fatal("Invalid Route Lookup: 11101")
+	}
+}
+
+func TestArray1(t *testing.T) {
+	trie := New()
+
+	trie.Add("*", "A")
+	trie.Add("1*", "B")
+	trie.Add("0*", "C")
+
+	nodes := trie.ToArray()
+
+	if nodes[1].NextHop != "A" {
+		t.Fatal("Invalid Node Array")
+	}
+	if nodes[2].NextHop != "B" {
+		t.Fatal("Invalid Node Array")
+	}
+	if nodes[3].NextHop != "C" {
+		t.Fatal("Invalid Node Array")
 	}
 }
