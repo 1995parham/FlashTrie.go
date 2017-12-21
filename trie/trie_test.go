@@ -23,7 +23,7 @@ func TestAdd1(t *testing.T) {
 	}
 
 	trie.Add("11*", "B")
-	if trie.Root.Left.Left.Prefix != "11*" {
+	if trie.Root.Right.Right.Prefix != "11*" {
 		t.Fatal("Invalid Route Insertation: 11*")
 	}
 
@@ -56,10 +56,10 @@ func TestArray1(t *testing.T) {
 	if nodes[1].NextHop != "A" {
 		t.Fatal("Invalid Node Array")
 	}
-	if nodes[2].NextHop != "B" {
+	if nodes[3].NextHop != "B" {
 		t.Fatal("Invalid Node Array")
 	}
-	if nodes[3].NextHop != "C" {
+	if nodes[2].NextHop != "C" {
 		t.Fatal("Invalid Node Array")
 	}
 }

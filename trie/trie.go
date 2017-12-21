@@ -33,7 +33,7 @@ func (t *Trie) Add(route string, nexthop string) {
 			it.Prefix = route
 			it.NextHop = nexthop
 		} else {
-			if b == '1' {
+			if b == '0' {
 				if it.Left == nil {
 					it.Left = new(Node)
 					it.Left.height = it.height + 1
@@ -43,7 +43,7 @@ func (t *Trie) Add(route string, nexthop string) {
 				}
 				it = it.Left
 			}
-			if b == '0' {
+			if b == '1' {
 				if it.Right == nil {
 					it.Right = new(Node)
 					it.Right.height = it.height + 1
@@ -67,7 +67,7 @@ func (t *Trie) Lookup(route string) string {
 			nexthop = it.NextHop
 		}
 
-		if b == '0' {
+		if b == '1' {
 			if it.Right != nil {
 				it = it.Right
 			} else {
