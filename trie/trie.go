@@ -84,3 +84,22 @@ func (t *Trie) Lookup(route string) string {
 
 	return nexthop
 }
+
+// ToArray returns node array of trie
+func (t *Trie) ToArray() []Node {
+	nodes := make([]Node, 1<<t.Stride)
+
+	nodes[1] = *t.Root
+
+	for i := 1; i < 1<<t.Stride; i++ {
+		c := nodes[i]
+		if c.Left != nil {
+			nodes[2*i] = *c.Left
+		}
+		if c.Right != nil {
+			nodes[2*i+1] = *c.Right
+		}
+	}
+
+	return nodes
+}
