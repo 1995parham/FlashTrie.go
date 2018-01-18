@@ -10,7 +10,7 @@
 
 package trie
 
-// Trie represents binary trie for route lookup
+// Trie represents binary trie for IP route lookup
 type Trie struct {
 	Root   *Node
 	Stride uint
@@ -86,6 +86,18 @@ func (t *Trie) Lookup(route string) string {
 }
 
 // ToArray returns node array of trie
+// with following structure:
+//       i
+//      / \
+//    2i  2i+1
+//
+// e.g.
+//       1
+//     /  \
+//    2    3
+//  /  \  / \
+// 4   5 6   7
+//
 func (t *Trie) ToArray() []Node {
 	nodes := make([]Node, 1<<t.Stride)
 
