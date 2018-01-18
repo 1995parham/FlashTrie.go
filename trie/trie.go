@@ -92,11 +92,11 @@ func (t *Trie) Lookup(route string) string {
 //    2i  2i+1
 //
 // e.g.
-//       1
-//     /  \
-//    2    3
-//  /  \  / \
-// 4   5 6   7
+//          1
+//        /  \
+//       2    3
+//     /  \  / \
+//    4   5 6   7
 //
 func (t *Trie) ToArray() []Node {
 	nodes := make([]Node, 1<<t.Stride)
