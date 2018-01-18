@@ -49,6 +49,7 @@ func New(tr *trie.Trie, compSize int) *PCTrie {
 		size++
 	}
 
+	// Eliminate Redundancy
 	for i := 0; i <= size/2; i++ {
 		if bitmap&(1<<uint(i)) != 0 {
 			if bitmap&(1<<uint(2*i+1)) != 0 && bitmap&(1<<uint(2*i+2)) != 0 {
