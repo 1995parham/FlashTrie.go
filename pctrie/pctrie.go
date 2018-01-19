@@ -65,3 +65,10 @@ func New(tr *trie.Trie, compSize int) *PCTrie {
 		NextHops: nhs,
 	}
 }
+
+// Lookup lookups given route in pc-tire and returns finded nexhop or -
+// given route must be in binary represenation e.g. 111111..
+func (pc *PCTrie) Lookup(route string) string {
+	// TODO
+	return ""
+}
