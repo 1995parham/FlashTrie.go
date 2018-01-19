@@ -70,6 +70,8 @@ func (t *Trie) Divide(stride uint) [][]*Trie {
 		// BFS initiation
 		q.Add(root)
 
+		// TODO Corrects root nexthop
+
 		// BFS loop
 		for !q.Empty() {
 			i, _ := q.Get(0)
@@ -161,6 +163,9 @@ func (t *Trie) Lookup(route string) string {
 				return nexthop
 			}
 		}
+	}
+	if it.Prefix != "" {
+		nexthop = it.NextHop
 	}
 
 	return nexthop

@@ -76,7 +76,21 @@ func TestLookup1(t *testing.T) {
 	trie.Add("10*", "C")
 
 	if trie.Lookup("11101") != "B" {
-		t.Fatal("Invalid Route Lookup: 11101")
+		t.Fatalf("Invalid lookup for 11101. B != %s", trie.Lookup("11101"))
+	}
+}
+
+func TestLookup2(t *testing.T) {
+	trie := New()
+
+	trie.Add("*", "A")
+	trie.Add("1*", "B")
+	trie.Add("00*", "C")
+	trie.Add("11*", "D")
+	trie.Add("100*", "E")
+
+	if trie.Lookup("100") != "E" {
+		t.Fatalf("Invalid lookup for 100. E != %s", trie.Lookup("100"))
 	}
 }
 
