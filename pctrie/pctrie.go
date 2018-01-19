@@ -13,7 +13,7 @@ package pctrie
 import (
 	"fmt"
 
-	"github.com/1995parham/FlashTrie.go/trie"
+	"github.com/AUTProjects/FlashTrie.go/trie"
 )
 
 // PCTrie represents prefix-compresed trie data structure

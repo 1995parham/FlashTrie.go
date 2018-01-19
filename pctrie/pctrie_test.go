@@ -14,7 +14,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/1995parham/FlashTrie.go/trie"
+	"github.com/AUTProjects/FlashTrie.go/trie"
 )
 
 func TestBasic1(t *testing.T) {
