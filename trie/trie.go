@@ -24,6 +24,33 @@ func New() *Trie {
 	}
 }
 
+// NewFromArray creates new trie based on given node array
+// with following structure
+//       i
+//      / \
+//    2i  2i+1
+func NewFromArray(nodes []Node) *Trie {
+	return nil
+}
+
+// Divide divides the binary trie into different levels
+// based on these k-bit subtries. Thus, level 0 contains
+// from prefix length 0 to prefix length 7, and so on.
+// Each level contains one or more subtries.
+func (t *Trie) Divide(stride uint) [][]*Trie {
+	// How many levels we need?
+	levels := t.Hight / stride
+	if t.Hight%stride != 0 {
+		levels++
+	}
+
+	tries := make([][]*Trie, levels)
+
+	// Creates subtries of each level
+
+	return tries
+}
+
 // Add adds new route into trie
 // given route must be in binary regex format e.g. *, 11*
 func (t *Trie) Add(route string, nexthop string) {
