@@ -27,10 +27,24 @@ func TestBasic1(t *testing.T) {
 	trie.Add("100*", "E")
 
 	pctrie := New(trie, 2)
+	if pctrie.Size != 7 {
+		t.Fatalf("Invalid bitmap size. 7 != %d", pctrie.Size)
+	}
+	if pctrie.compBits != 1 {
+		t.Fatalf("Invalid number of bits are used to identify NHI. 1 != %d", pctrie.compBits)
+	}
 	bitmap := fmt.Sprintf("%0*b", pctrie.Size, pctrie.Bitmap)
 	if bitmap != "0100110" {
-		t.Fatal("Invalid bitmap")
+		t.Fatalf("Invalid bitmap. 0110010 != %s", bitmap)
 	}
+
+	if pctrie.Lookup("100") != trie.Lookup("100") {
+		t.Fatalf("Invalid lookup for 100. %s != %s", trie.Lookup("100"), pctrie.Lookup("100"))
+	}
+	if pctrie.Lookup("001") != trie.Lookup("001") {
+		t.Fatalf("Invalid lookup for 100. %s != %s", trie.Lookup("001"), pctrie.Lookup("001"))
+	}
+
 }
 
 func TestBasic2(t *testing.T) {
