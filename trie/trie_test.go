@@ -27,8 +27,8 @@ func TestAdd1(t *testing.T) {
 		t.Fatal("Invalid Route Insertation: 11*")
 	}
 
-	if trie.Hight != 3 {
-		t.Fatalf("Invalid stride: 3 != %d", trie.Hight)
+	if trie.Height != 3 {
+		t.Fatalf("Invalid stride: 3 != %d", trie.Height)
 	}
 }
 
