@@ -28,7 +28,7 @@ func TestAdd1(t *testing.T) {
 	}
 
 	if trie.Height != 3 {
-		t.Fatalf("Invalid stride: 3 != %d", trie.Height)
+		t.Fatalf("Invalid height: 3 != %d", trie.Height)
 	}
 }
 
@@ -49,9 +49,22 @@ func TestDivide(t *testing.T) {
 	trie.Add("11*", "D")
 	trie.Add("100*", "E")
 
+	if trie.Height != 4 {
+		t.Fatalf("Invalid height: 4 != %d", trie.Height)
+	}
+
 	tries := trie.Divide(3)
 	if len(tries) != 2 {
 		t.Fatalf("Invalid number of levels in dividation")
+	}
+	if len(tries[0]) != 1 {
+		t.Fatalf("Invalid number of tires in level 0")
+	}
+	if tries[0][0].Height != 3 {
+		t.Fatalf("Invalid height of trie in level 0: 3 != %d", tries[0][0].Height)
+	}
+	if len(tries[1]) != 1 {
+		t.Fatalf("Invalid number of tires in level 1")
 	}
 }
 

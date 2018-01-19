@@ -10,6 +10,10 @@
 
 package trie
 
+import (
+	dll "github.com/emirpasic/gods/lists/doublylinkedlist"
+)
+
 // Trie represents binary trie for IP route lookup
 type Trie struct {
 	Root   *Node
@@ -51,14 +55,52 @@ func (t *Trie) Divide(stride uint) [][]*Trie {
 	tries := make([][]*Trie, levels)
 
 	// Creates subtries of each level with buidler
+	// Builder is called on each root node of next level
+	// and returns trie of that node
 
-	var builder func(root *Node, level uint)
-	builder = func(root *Node, level uint) {
-		it := root
-		for it.height >= stride*level && it.height <= stride*(level+1) {
+	var builder func(root *Node, level uint) *Trie
+	builder = func(root *Node, level uint) *Trie {
+		// Trie of given root node
+		t := New()
+		tries[level] = make([]*Trie, 0)
+
+		// BFS queue
+		q := dll.New()
+
+		// BFS initiation
+		q.Add(root)
+
+		// BFS loop
+		for !q.Empty() {
+			i, _ := q.Get(0)
+			n := i.(*Node)
+
+			if n.NextHop != "" {
+				// Adds existing prefix into new trie
+				t.Add(n.Prefix, n.NextHop)
+			}
+			if n.Right != nil {
+				if n.Right.height >= stride*(level+1) {
+					tries[level+1] = append(tries[level+1], builder(n.Right, level+1))
+				} else {
+					q.Add(n.Right)
+				}
+			}
+			if n.Left != nil {
+				if n.Left.height >= stride*(level+1) {
+					tries[level+1] = append(tries[level+1], builder(n.Left, level+1))
+				} else {
+					q.Add(n.Left)
+				}
+			}
+
+			q.Remove(0)
 		}
+		return t
 	}
-	builder(t.Root, 1)
+	tries[0] = []*Trie{
+		builder(t.Root, 0),
+	}
 
 	return tries
 }
