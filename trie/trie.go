@@ -12,15 +12,15 @@ package trie
 
 // Trie represents binary trie for IP route lookup
 type Trie struct {
-	Root  *Node
-	Hight uint
+	Root   *Node
+	Height uint
 }
 
 // New creates new trie
 func New() *Trie {
 	return &Trie{
-		Root:  new(Node),
-		Hight: 1,
+		Root:   new(Node),
+		Height: 1,
 	}
 }
 
@@ -29,24 +29,36 @@ func New() *Trie {
 //       i
 //      / \
 //    2i  2i+1
+// TODO
 func NewFromArray(nodes []Node) *Trie {
+	for i := 0; i < len(nodes); i++ {
+	}
+
 	return nil
 }
 
 // Divide divides the binary trie into different levels
-// based on these k-bit subtries. Thus, level 0 contains
+// based on these k-bit subtries. If k = 4 thus, level 0 contains
 // from prefix length 0 to prefix length 7, and so on.
 // Each level contains one or more subtries.
 func (t *Trie) Divide(stride uint) [][]*Trie {
 	// How many levels we need?
-	levels := t.Hight / stride
-	if t.Hight%stride != 0 {
+	levels := t.Height / stride
+	if t.Height%stride != 0 {
 		levels++
 	}
 
 	tries := make([][]*Trie, levels)
 
-	// Creates subtries of each level
+	// Creates subtries of each level with buidler
+
+	var builder func(root *Node, level uint)
+	builder = func(root *Node, level uint) {
+		it := root
+		for it.height >= stride*level && it.height <= stride*(level+1) {
+		}
+	}
+	builder(t.Root, 1)
 
 	return tries
 }
@@ -64,8 +76,8 @@ func (t *Trie) Add(route string, nexthop string) {
 				if it.Left == nil {
 					it.Left = new(Node)
 					it.Left.height = it.height + 1
-					if t.Hight < it.Left.height+1 {
-						t.Hight = it.Left.height + 1
+					if t.Height < it.Left.height+1 {
+						t.Height = it.Left.height + 1
 					}
 				}
 				it = it.Left
@@ -74,8 +86,8 @@ func (t *Trie) Add(route string, nexthop string) {
 				if it.Right == nil {
 					it.Right = new(Node)
 					it.Right.height = it.height + 1
-					if t.Hight < it.Right.height+1 {
-						t.Hight = it.Right.height + 1
+					if t.Height < it.Right.height+1 {
+						t.Height = it.Right.height + 1
 					}
 				}
 				it = it.Right
@@ -126,11 +138,11 @@ func (t *Trie) Lookup(route string) string {
 //    4   5 6   7
 //
 func (t *Trie) ToArray() []Node {
-	nodes := make([]Node, 1<<t.Hight)
+	nodes := make([]Node, 1<<t.Height)
 
 	nodes[1] = *t.Root
 
-	for i := 1; i < 1<<t.Hight; i++ {
+	for i := 1; i < 1<<t.Height; i++ {
 		c := nodes[i]
 		if c.Left != nil {
 			nodes[2*i] = *c.Left
