@@ -32,6 +32,29 @@ func TestAdd1(t *testing.T) {
 	}
 }
 
+func TestDivide(t *testing.T) {
+	//          A
+	//       /     \
+	//      -       B
+	//     / \    /  \
+	//    C  -   -    D
+	//   / \/ \ / \  / \
+	//  -  -  - E - -  -
+
+	trie := New()
+
+	trie.Add("*", "A")
+	trie.Add("1*", "B")
+	trie.Add("00*", "C")
+	trie.Add("11*", "D")
+	trie.Add("100*", "E")
+
+	tries := trie.Divide(3)
+	if len(tries) != 2 {
+		t.Fatalf("Invalid number of levels in dividation")
+	}
+}
+
 func TestLookup1(t *testing.T) {
 	trie := New()
 
