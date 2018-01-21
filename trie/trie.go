@@ -107,6 +107,8 @@ func (t *Trie) Divide(stride uint) [][]*Trie {
 
 			q.Remove(0)
 		}
+
+		t.Height = stride
 		return t
 	}
 	tries[0] = []*Trie{
