@@ -11,7 +11,6 @@
 package pctrie
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/AUTProjects/FlashTrie.go/trie"
@@ -33,9 +32,8 @@ func TestBasic1(t *testing.T) {
 	if pctrie.compBits != 1 {
 		t.Fatalf("Invalid number of bits are used to identify NHI. 1 != %d", pctrie.compBits)
 	}
-	bitmap := fmt.Sprintf("%0*b", pctrie.Size, pctrie.Bitmap)
-	if bitmap != "0100110" {
-		t.Fatalf("Invalid bitmap. 0110010 != %s", bitmap)
+	if string(pctrie.Bitmap) != "0110010" {
+		t.Fatalf("Invalid bitmap. 0110010 != %s", string(pctrie.Bitmap))
 	}
 
 	if pctrie.Lookup("100") != trie.Lookup("100") {
@@ -57,11 +55,10 @@ func TestBasic2(t *testing.T) {
 	trie.Add("100*", "E")
 
 	pctrie := New(trie, 4)
-	bitmap := fmt.Sprintf("%0*b", pctrie.Size, pctrie.Bitmap)
-	if bitmap != "101" {
-		t.Fatal("Invalid bitmap")
+	if string(pctrie.Bitmap) != "101" {
+		t.Fatalf("Invalid bitmap. 101 != %s", string(pctrie.Bitmap))
 	}
-	for i, b := range bitmap {
+	for i, b := range pctrie.Bitmap {
 		if b == '1' {
 			if len(pctrie.NextHops[i]) == 0 {
 				t.Fatalf("Invalid NextHops at %d\n", i)

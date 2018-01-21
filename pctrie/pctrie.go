@@ -19,7 +19,7 @@ import (
 
 // PCTrie represents prefix-compresed trie data structure
 type PCTrie struct {
-	Bitmap   int
+	Bitmap   []byte
 	NextHops [][]string
 	Size     int // Bitmap size
 
@@ -32,7 +32,7 @@ type PCTrie struct {
 func New(tr *trie.Trie, compSize int) *PCTrie {
 	nodes := tr.ToArray()
 	nhs := make([][]string, 0)
-	bitmap := 0
+	bitmap := make([]byte, 0)
 	size := 0
 
 	// All PC-Trie node
@@ -41,15 +41,16 @@ func New(tr *trie.Trie, compSize int) *PCTrie {
 		nh := make([]string, compSize)
 
 		for t := s; t < s+compSize; t++ {
-			nh[t-s] = tr.Lookup(fmt.Sprintf("%b", t)[1:] + "*")
+			nh[t-s] = tr.Lookup(fmt.Sprintf("%b", t)[1:])
 			if nodes[t].NextHop != "" {
 				empty = false
 			}
 		}
 		if !empty {
-			bitmap |= 1 << uint(size)
+			bitmap = append(bitmap, '1')
 			nhs = append(nhs, nh)
 		} else {
+			bitmap = append(bitmap, '0')
 			nhs = append(nhs, make([]string, 0))
 		}
 		size++
@@ -57,9 +58,9 @@ func New(tr *trie.Trie, compSize int) *PCTrie {
 
 	// Eliminate Redundancy
 	for i := 0; i <= size/2; i++ {
-		if bitmap&(1<<uint(i)) != 0 {
-			if bitmap&(1<<uint(2*i+1)) != 0 && bitmap&(1<<uint(2*i+2)) != 0 {
-				bitmap ^= 1 << uint(i)
+		if bitmap[i] == '1' {
+			if bitmap[2*i+1] == '1' && bitmap[2*i+2] == '1' {
+				bitmap[i] = '0'
 				nhs[i] = make([]string, 0)
 			}
 		}
@@ -95,7 +96,7 @@ func (pc *PCTrie) Lookup(route string) string {
 	// how many bit we need for routing
 	bits := pc.height
 
-	for !indicator && bits >= pc.compBits+1 {
+	for !indicator && bits > pc.compBits {
 		// given bitmap
 		b := route[:bits]
 
@@ -106,11 +107,15 @@ func (pc *PCTrie) Lookup(route string) string {
 		// bitmap access
 		i, _ = strconv.ParseInt(b[:bits-pc.compBits], 2, 0)
 		offset = int(i) + (1 << uint(bits-pc.compBits)) - 1
-		if pc.Bitmap&(1<<uint(offset)) != 0 {
+		if pc.Bitmap[offset] == '1' {
 			indicator = true
 		}
 
 		bits--
+	}
+
+	if !indicator {
+		return "-"
 	}
 
 	return pc.NextHops[offset][nhi]
