@@ -71,7 +71,7 @@ func (t *Trie) Divide(stride uint) [][]*Trie {
 		t.Prefix = root.prefix
 
 		// Roots array of next level tries
-		if int(level+1) < len(tries) {
+		if int(level+1) < len(tries) && tries[level+1] == nil {
 			tries[level+1] = make([]*Trie, 0)
 		}
 
