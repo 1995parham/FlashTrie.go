@@ -11,7 +11,6 @@
 package trie
 
 import (
-	"fmt"
 	"testing"
 )
 
@@ -107,8 +106,9 @@ func TestDivide2(t *testing.T) {
 	if len(tries[1]) != 3 {
 		t.Fatalf("Invalid number of tires in level 1: 3 != %d", len(tries[1]))
 	}
+
 	for _, trie := range tries[1] {
-		fmt.Println(trie.Root.prefix, trie.Root.NextHop)
+		t.Log(trie.Prefix)
 		if trie.Root.NextHop == "" {
 			t.Fatalf("Subtries must be independent")
 		}
