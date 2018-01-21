@@ -18,6 +18,7 @@ import (
 type Trie struct {
 	Root   *Node
 	Height uint
+	Prefix string // when trie is subtrie this field represents old prefix of root
 }
 
 // New creates new trie
@@ -60,17 +61,25 @@ func (t *Trie) Divide(stride uint) [][]*Trie {
 
 	var builder func(root *Node, level uint) *Trie
 	builder = func(root *Node, level uint) *Trie {
+		// Corrects root nexthop
+		if root.NextHop == "" {
+			root.NextHop = t.Lookup(root.prefix + "*")
+		}
+
 		// Trie of given root node
 		t := New()
-		tries[level] = make([]*Trie, 0)
+		t.Prefix = root.prefix
+
+		// Roots array of next level tries
+		if int(level+1) < len(tries) {
+			tries[level+1] = make([]*Trie, 0)
+		}
 
 		// BFS queue
 		q := dll.New()
 
 		// BFS initiation
 		q.Add(root)
-
-		// TODO Corrects root nexthop
 
 		// BFS loop
 		for !q.Empty() {
@@ -79,7 +88,7 @@ func (t *Trie) Divide(stride uint) [][]*Trie {
 
 			if n.NextHop != "" {
 				// Adds existing prefix into new trie
-				t.Add(n.prefix, n.NextHop)
+				t.Add(n.prefix[len(t.Prefix):]+"*", n.NextHop)
 			}
 			if n.Right != nil {
 				if n.Right.height >= stride*(level+1) {

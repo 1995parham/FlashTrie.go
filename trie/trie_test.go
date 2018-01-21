@@ -11,6 +11,7 @@
 package trie
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -36,7 +37,7 @@ func TestAdd1(t *testing.T) {
 	}
 }
 
-func TestDivide(t *testing.T) {
+func TestDivide1(t *testing.T) {
 	//          A
 	//       /     \
 	//      -       B
@@ -62,13 +63,55 @@ func TestDivide(t *testing.T) {
 		t.Fatalf("Invalid number of levels in dividation")
 	}
 	if len(tries[0]) != 1 {
-		t.Fatalf("Invalid number of tires in level 0")
+		t.Fatalf("Invalid number of tires in level 0: 1 != %d", len(tries[0]))
 	}
 	if tries[0][0].Height != 3 {
 		t.Fatalf("Invalid height of trie in level 0: 3 != %d", tries[0][0].Height)
 	}
 	if len(tries[1]) != 1 {
-		t.Fatalf("Invalid number of tires in level 1")
+		t.Fatalf("Invalid number of tires in level 1: 1 != %d", len(tries[1]))
+	}
+}
+
+func TestDivide2(t *testing.T) {
+	//          A
+	//       /     \
+	//      -       B
+	//     / \    /  \
+	//    C  -   -    D
+	//   / \/ \ / \  / \
+	//  -  -  - E - -  -
+
+	trie := New()
+
+	trie.Add("*", "A")
+	trie.Add("1*", "B")
+	trie.Add("00*", "C")
+	trie.Add("11*", "D")
+	trie.Add("100*", "E")
+
+	if trie.Height != 4 {
+		t.Fatalf("Invalid height: 4 != %d", trie.Height)
+	}
+
+	tries := trie.Divide(2)
+	if len(tries) != 2 {
+		t.Fatalf("Invalid number of levels in dividation")
+	}
+	if len(tries[0]) != 1 {
+		t.Fatalf("Invalid number of tires in level 0: 1 != %d", len(tries[0]))
+	}
+	if tries[0][0].Height != 2 {
+		t.Fatalf("Invalid height of trie in level 0: 2 != %d", tries[0][0].Height)
+	}
+	if len(tries[1]) != 3 {
+		t.Fatalf("Invalid number of tires in level 1: 3 != %d", len(tries[1]))
+	}
+	for _, trie := range tries[1] {
+		fmt.Println(trie.Root.prefix, trie.Root.NextHop)
+		if trie.Root.NextHop == "" {
+			t.Fatalf("Subtries must be independent")
+		}
 	}
 }
 
