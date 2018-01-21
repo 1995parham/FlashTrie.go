@@ -29,7 +29,7 @@ func TestAdd1(t *testing.T) {
 	}
 
 	if trie.Root.Right.prefix != "1" {
-		t.Fatal("Invalid Prefix: 1 != %s", trie.Root.Right.prefix)
+		t.Fatalf("Invalid Prefix: 1 != %s", trie.Root.Right.prefix)
 	}
 
 	if trie.Height != 3 {
