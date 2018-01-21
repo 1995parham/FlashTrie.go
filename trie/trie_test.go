@@ -18,13 +18,17 @@ func TestAdd1(t *testing.T) {
 	trie := New()
 
 	trie.Add("*", "A")
-	if trie.Root.Prefix != "*" {
+	if trie.Root.NextHop == "" || trie.Root.prefix != "" {
 		t.Fatal("Invalid Route Insertation: *")
 	}
 
 	trie.Add("11*", "B")
-	if trie.Root.Right.Right.Prefix != "11*" {
+	if trie.Root.Right.Right.NextHop == "" || trie.Root.Right.Right.prefix != "11" {
 		t.Fatal("Invalid Route Insertation: 11*")
+	}
+
+	if trie.Root.Right.prefix != "1" {
+		t.Fatal("Invalid Prefix: 1 != %s", trie.Root.Right.prefix)
 	}
 
 	if trie.Height != 3 {

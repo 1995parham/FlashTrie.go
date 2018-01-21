@@ -79,7 +79,7 @@ func (t *Trie) Divide(stride uint) [][]*Trie {
 
 			if n.NextHop != "" {
 				// Adds existing prefix into new trie
-				t.Add(n.Prefix, n.NextHop)
+				t.Add(n.prefix, n.NextHop)
 			}
 			if n.Right != nil {
 				if n.Right.height >= stride*(level+1) {
@@ -113,12 +113,12 @@ func (t *Trie) Add(route string, nexthop string) {
 	it := t.Root
 	for _, b := range route {
 		if b == '*' {
-			it.Prefix = route
 			it.NextHop = nexthop
 		} else {
 			if b == '0' {
 				if it.Left == nil {
 					it.Left = new(Node)
+					it.Left.prefix = it.prefix + "0"
 					it.Left.height = it.height + 1
 					if t.Height < it.Left.height+1 {
 						t.Height = it.Left.height + 1
@@ -129,6 +129,7 @@ func (t *Trie) Add(route string, nexthop string) {
 			if b == '1' {
 				if it.Right == nil {
 					it.Right = new(Node)
+					it.Right.prefix = it.prefix + "1"
 					it.Right.height = it.height + 1
 					if t.Height < it.Right.height+1 {
 						t.Height = it.Right.height + 1
@@ -146,7 +147,7 @@ func (t *Trie) Lookup(route string) string {
 	it := t.Root
 	nexthop := "-"
 	for _, b := range route {
-		if it.Prefix != "" {
+		if it.NextHop != "" {
 			nexthop = it.NextHop
 		}
 
@@ -164,7 +165,7 @@ func (t *Trie) Lookup(route string) string {
 			}
 		}
 	}
-	if it.Prefix != "" {
+	if it.NextHop != "" {
 		nexthop = it.NextHop
 	}
 
