@@ -17,10 +17,15 @@ import (
 	"github.com/AUTProjects/FlashTrie.go/trie"
 )
 
+type hashElement struct {
+	pctrie  *pctrie.PCTrie
+	nextHop string
+}
+
 // FLTrie represents flash trie structure
 type FLTrie struct {
 	trie    *trie.Trie
-	pctries []map[string]*pctrie.PCTrie
+	pctries []map[string]*hashElement
 	build   bool
 }
 
@@ -28,7 +33,7 @@ type FLTrie struct {
 func New() *FLTrie {
 	return &FLTrie{
 		trie:    trie.New(),
-		pctries: make([]map[string]*pctrie.PCTrie, 2),
+		pctries: make([]map[string]*hashElement, 2),
 	}
 }
 
@@ -52,14 +57,20 @@ func (fl *FLTrie) Build() error {
 		tries := fl.trie.Divide(8)
 
 		// Level 2 pctries
-		fl.pctries[0] = make(map[string]*pctrie.PCTrie)
+		fl.pctries[0] = make(map[string]*hashElement)
 		for _, trie := range tries[2] {
-			fl.pctries[0][trie.Prefix] = pctrie.New(trie, 2)
+			fl.pctries[0][trie.Prefix] = &hashElement{
+				pctrie:  pctrie.New(trie, 2),
+				nextHop: trie.Root.NextHop,
+			}
 		}
 		// Level 3 pctries
-		fl.pctries[1] = make(map[string]*pctrie.PCTrie)
+		fl.pctries[1] = make(map[string]*hashElement)
 		for _, trie := range tries[3] {
-			fl.pctries[1][trie.Prefix] = pctrie.New(trie, 2)
+			fl.pctries[1][trie.Prefix] = &hashElement{
+				pctrie:  pctrie.New(trie, 2),
+				nextHop: trie.Root.NextHop,
+			}
 		}
 		return nil
 	}
@@ -76,15 +87,19 @@ func (fl *FLTrie) Lookup(route string) (nh string) {
 			nh = nhi
 		}
 		// Level 2 (25 bit - 8 bit pctrie)
-		if pctrie, ok := fl.pctries[0][route[:16]]; ok {
-			if nhi := pctrie.Lookup(route[16:24]); nhi != "-" {
+		if he, ok := fl.pctries[0][route[:16]]; ok {
+			if nhi := he.pctrie.Lookup(route[16:24]); nhi != "-" {
 				nh = nhi
+			} else {
+				nh = he.nextHop
 			}
 		}
 		// Level 3 (32 bit - 8 bit pctrie)
-		if pctrie, ok := fl.pctries[1][route[:24]]; ok {
-			if nhi := pctrie.Lookup(route[24:32]); nhi != "-" {
+		if he, ok := fl.pctries[1][route[:24]]; ok {
+			if nhi := he.pctrie.Lookup(route[24:32]); nhi != "-" {
 				nh = nhi
+			} else {
+				nh = he.nextHop
 			}
 		}
 
