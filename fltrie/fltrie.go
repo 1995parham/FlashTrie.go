@@ -65,3 +65,29 @@ func (fl *FLTrie) Build() error {
 	}
 	return fmt.Errorf("FLTrie is build already")
 }
+
+// Lookup lookups given route and returns finded nexhop or -
+// given route must be in binary represenation e.g. 111111..
+func (fl *FLTrie) Lookup(route string) (nh string) {
+	nh = "-"
+	if len(route) == 32 && fl.build {
+		// Level 1 (16 bit trie)
+		if nhi := fl.trie.Lookup(route[:16]); nhi != "-" {
+			nh = nhi
+		}
+		// Level 2 (25 bit - 8 bit pctrie)
+		if pctrie, ok := fl.pctries[0][route[:16]]; ok {
+			if nhi := pctrie.Lookup(route[16:24]); nhi != "-" {
+				nh = nhi
+			}
+		}
+		// Level 3 (32 bit - 8 bit pctrie)
+		if pctrie, ok := fl.pctries[1][route[:24]]; ok {
+			if nhi := pctrie.Lookup(route[24:32]); nhi != "-" {
+				nh = nhi
+			}
+		}
+
+	}
+	return
+}
