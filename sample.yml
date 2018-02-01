@@ -1,5 +1,7 @@
 - route: 0.0.0.0/31
   nexthop: $
+- route: 0.0.0.0/0
+  nexthop: Kiana
 - route: 192.168.73.0/24
   nexthop: A
 - route: 192.168.72.0/24
