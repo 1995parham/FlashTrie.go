@@ -52,7 +52,7 @@ func TestBasic(t *testing.T) {
 var testRoutes []route = []route{
 	route{
 		Route:   "1.2.3.4",
-		Nexthop: "Kiana",
+		Nexthop: "Raha",
 	},
 	route{
 		Route:   "10.10.10.194",

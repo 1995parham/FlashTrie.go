@@ -14,7 +14,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"os"
 
 	"github.com/AUTProjects/FlashTrie.go/fltrie"
 	"github.com/AUTProjects/FlashTrie.go/util"
@@ -38,7 +37,6 @@ func main() {
 	data, err := ioutil.ReadFile(f)
 	if err != nil {
 		log.Fatalf("Reading file %s failed with: %s\n", f, err)
-		os.Exit(1)
 	}
 
 	err = yaml.Unmarshal(data, &routes)
@@ -54,18 +52,15 @@ func main() {
 		r, err := util.ParseNet(route.Route)
 		if err != nil {
 			log.Fatalf("Parsing file %s failed with: %s\n", f, err)
-			os.Exit(1)
 		}
 		fltrie.Add(r, route.Nexthop)
 	}
 
 	if err := fltrie.Build(); err != nil {
 		log.Fatalf("Building flash trie failed with: %s\n", err)
-		os.Exit(1)
 	}
 
 	// Run shell
-
 	shell := ishell.New()
 	shell.Println("Welcome to FlashTrie.go by Parham Alvani @ 2018")
 

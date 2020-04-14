@@ -55,13 +55,13 @@ func (t *Trie) Divide(stride uint) [][]*Trie {
 
 	tries := make([][]*Trie, levels)
 
-	// Creates subtries of each level with buidler
+	// Creates subtries of each level with builder
 	// Builder is called on each root node of next level
 	// and returns trie of that node
 
 	var builder func(root *Node, level uint) *Trie
 	builder = func(root *Node, level uint) *Trie {
-		// Corrects root nexthop
+		// Corrects root next hop
 		if root.NextHop == "" {
 			root.NextHop = t.Lookup(root.prefix + "*")
 		}

@@ -17,7 +17,7 @@ import (
 	"github.com/AUTProjects/FlashTrie.go/trie"
 )
 
-// PCTrie represents prefix-compresed trie data structure
+// PCTrie represents prefix-compressed trie data structure
 type PCTrie struct {
 	Bitmap   []byte
 	NextHops [][]string
@@ -28,7 +28,7 @@ type PCTrie struct {
 
 }
 
-// New creates new prefix-compresed trie
+// New creates new prefix-compressed trie
 func New(tr *trie.Trie, compSize int) *PCTrie {
 	nodes := tr.ToArray()
 	nhs := make([][]string, 0)
@@ -82,10 +82,10 @@ func New(tr *trie.Trie, compSize int) *PCTrie {
 	}
 }
 
-// Lookup lookups given route in pc-tire and returns finded nexhop or -
-// given route must be in binary represenation e.g. 111111..
+// Lookup lookups given route in pc-tire and returns found nexhop or -
+// given route must be in binary representation e.g. 111111..
 // note that this function assume that given route length is greater than
-// orignal trie height
+// original trie height
 func (pc *PCTrie) Lookup(route string) string {
 	// access into NextHops array
 	offset := 0
