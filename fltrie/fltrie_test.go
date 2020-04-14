@@ -17,11 +17,11 @@ import (
 	"github.com/AUTProjects/FlashTrie.go/util"
 )
 
-var lookups = map[string]string{
-	"192.168.73.10": "B",
-}
-
 func TestBasic(t *testing.T) {
+	var lookups = map[string]string{
+		"192.168.73.10": "B",
+	}
+
 	fltrie := New()
 
 	r1, _ := util.ParseNet("0.0.0.0/31")

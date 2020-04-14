@@ -29,7 +29,7 @@ type FLTrie struct {
 	build   bool
 }
 
-// New creates empty and unbuild flash trie
+// New creates empty and un-build flash trie
 func New() *FLTrie {
 	return &FLTrie{
 		trie:    trie.New(),
@@ -64,6 +64,7 @@ func (fl *FLTrie) Build() error {
 				nextHop: trie.Root.NextHop,
 			}
 		}
+
 		// Level 3 pctries
 		fl.pctries[1] = make(map[string]*hashElement)
 		for _, trie := range tries[3] {
@@ -72,15 +73,18 @@ func (fl *FLTrie) Build() error {
 				nextHop: trie.Root.NextHop,
 			}
 		}
+
 		return nil
 	}
+
 	return fmt.Errorf("FLTrie is build already")
 }
 
-// Lookup lookups given route and returns finded nexhop or -
-// given route must be in binary represenation e.g. 111111..
-func (fl *FLTrie) Lookup(route string) (nh string) {
-	nh = "-"
+// Lookup lookups given route and returns found nexhop or -
+// given route must be in binary representation e.g. 111111..
+func (fl *FLTrie) Lookup(route string) string {
+	nh := "-"
+
 	if len(route) == 32 && fl.build {
 		// Level 1 (16 bit trie)
 		if nhi := fl.trie.Lookup(route[:16]); nhi != "-" {
@@ -102,7 +106,7 @@ func (fl *FLTrie) Lookup(route string) (nh string) {
 				nh = he.nextHop
 			}
 		}
-
 	}
-	return
+
+	return nh
 }

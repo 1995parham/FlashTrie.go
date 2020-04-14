@@ -21,14 +21,6 @@ import (
 	"github.com/AUTProjects/FlashTrie.go/util"
 )
 
-var ipAddress = []string{
-	"172.0.1.1",
-	"192.0.1.1",
-	"192.0.0.0",
-	"172.73.72.75",
-	"194.0.0.0",
-}
-
 func TestBasic(t *testing.T) {
 	r1, _ := util.ParseNet("192.0.2.1/4")
 	r2, _ := util.ParseNet("192.0.2.1/8")
@@ -41,35 +33,45 @@ func TestBasic(t *testing.T) {
 
 	pctrie := pctrie.New(trie, 4)
 
+	var ipAddress = []string{
+		"172.0.1.1",
+		"192.0.1.1",
+		"192.0.0.0",
+		"172.73.72.75",
+		"194.0.0.0",
+	}
+
 	for _, ip := range ipAddress {
 		if trie.Lookup(util.ParseIP(ip)) != pctrie.Lookup(util.ParseIP(ip)) {
 			t.Fatalf("Invalid route %s: %s != %s", ip, trie.Lookup(util.ParseIP(ip)), pctrie.Lookup(util.ParseIP(ip)))
 		}
+
 		t.Logf("%s: %s", ip, trie.Lookup(util.ParseIP(ip)))
 	}
 }
 
-var testRoutes []route = []route{
-	route{
-		Route:   "1.2.3.4",
-		Nexthop: "Raha",
-	},
-	route{
-		Route:   "10.10.10.194",
-		Nexthop: "6.6.6.6",
-	},
-	route{
-		Route:   "10.10.10.2",
-		Nexthop: "5.5.5.5",
-	},
-	route{
-		Route:   "218.144.10.10",
-		Nexthop: "209.244.2.115",
-	},
-}
-
 func TestFarkiani(t *testing.T) {
+	var testRoutes = []route{
+		{
+			Route:   "1.2.3.4",
+			Nexthop: "Raha",
+		},
+		{
+			Route:   "10.10.10.194",
+			Nexthop: "6.6.6.6",
+		},
+		{
+			Route:   "10.10.10.2",
+			Nexthop: "5.5.5.5",
+		},
+		{
+			Route:   "218.144.10.10",
+			Nexthop: "209.244.2.115",
+		},
+	}
+
 	f := "T1.yml"
+
 	var routes []route
 
 	data, err := ioutil.ReadFile(f)
@@ -91,6 +93,7 @@ func TestFarkiani(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Parsing file %s failed with: %s\n", f, err)
 		}
+
 		fltrie.Add(r, route.Nexthop)
 	}
 

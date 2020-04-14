@@ -28,6 +28,7 @@ type route struct {
 
 func main() {
 	var f string
+
 	var routes []route
 
 	fmt.Print("Routes file name (without .yml extension): ")
@@ -53,6 +54,7 @@ func main() {
 		if err != nil {
 			log.Fatalf("Parsing file %s failed with: %s\n", f, err)
 		}
+
 		fltrie.Add(r, route.Nexthop)
 	}
 

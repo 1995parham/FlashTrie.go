@@ -66,7 +66,7 @@ func New(tr *trie.Trie, compSize int) *PCTrie {
 		}
 	}
 
-	// Caculate number of bits are needed to identify NHI
+	// Calculate number of bits are needed to identify NHI
 	var compBits uint
 	for compSize>>compBits != 1 {
 		compBits++
