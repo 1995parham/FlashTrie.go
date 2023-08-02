@@ -1,42 +1,13 @@
-/*
- * +===============================================
- * | Author:        Parham Alvani <parham.alvani@gmail.com>
- * |
- * | Creation Date: 27-11-2017
- * |
- * | File Name:     trie/trie_test.go
- * +===============================================
- */
-
-package trie
+package trie_test
 
 import (
 	"testing"
+
+	"github.com/1995parham/FlashTrie.go/trie"
 )
 
-func TestAdd1(t *testing.T) {
-	trie := New()
-
-	trie.Add("*", "A")
-	if trie.Root.NextHop == "" || trie.Root.prefix != "" {
-		t.Fatal("Invalid Route Insertation: *")
-	}
-
-	trie.Add("11*", "B")
-	if trie.Root.Right.Right.NextHop == "" || trie.Root.Right.Right.prefix != "11" {
-		t.Fatal("Invalid Route Insertation: 11*")
-	}
-
-	if trie.Root.Right.prefix != "1" {
-		t.Fatalf("Invalid Prefix: 1 != %s", trie.Root.Right.prefix)
-	}
-
-	if trie.Height != 3 {
-		t.Fatalf("Invalid height: 3 != %d", trie.Height)
-	}
-}
-
 func TestDivide1(t *testing.T) {
+	t.Parallel()
 	//          A
 	//       /     \
 	//      -       B
@@ -45,7 +16,7 @@ func TestDivide1(t *testing.T) {
 	//   / \/ \ / \  / \
 	//  -  -  - E - -  -
 
-	trie := New()
+	trie := trie.New()
 
 	trie.Add("*", "A")
 	trie.Add("1*", "B")
@@ -61,18 +32,22 @@ func TestDivide1(t *testing.T) {
 	if len(tries) != 2 {
 		t.Fatalf("Invalid number of levels in dividation")
 	}
+
 	if len(tries[0]) != 1 {
 		t.Fatalf("Invalid number of tires in level 0: 1 != %d", len(tries[0]))
 	}
+
 	if tries[0][0].Height != 3 {
 		t.Fatalf("Invalid height of trie in level 0: 3 != %d", tries[0][0].Height)
 	}
+
 	if len(tries[1]) != 1 {
 		t.Fatalf("Invalid number of tires in level 1: 1 != %d", len(tries[1]))
 	}
 }
 
 func TestDivide2(t *testing.T) {
+	t.Parallel()
 	//          A
 	//       /     \
 	//      -       B
@@ -81,7 +56,7 @@ func TestDivide2(t *testing.T) {
 	//   / \/ \ / \  / \
 	//  -  -  - E - -  -
 
-	trie := New()
+	trie := trie.New()
 
 	trie.Add("*", "A")
 	trie.Add("1*", "B")
@@ -97,18 +72,22 @@ func TestDivide2(t *testing.T) {
 	if len(tries) != 2 {
 		t.Fatalf("Invalid number of levels in dividation")
 	}
+
 	if len(tries[0]) != 1 {
 		t.Fatalf("Invalid number of tires in level 0: 1 != %d", len(tries[0]))
 	}
+
 	if tries[0][0].Height != 2 {
 		t.Fatalf("Invalid height of trie in level 0: 2 != %d", tries[0][0].Height)
 	}
+
 	if len(tries[1]) != 3 {
 		t.Fatalf("Invalid number of tires in level 1: 3 != %d", len(tries[1]))
 	}
 
 	for _, trie := range tries[1] {
 		t.Log(trie.Prefix)
+
 		if trie.Root.NextHop == "" {
 			t.Fatalf("Subtries must be independent")
 		}
@@ -116,7 +95,9 @@ func TestDivide2(t *testing.T) {
 }
 
 func TestLookup1(t *testing.T) {
-	trie := New()
+	t.Parallel()
+
+	trie := trie.New()
 
 	trie.Add("*", "A")
 	trie.Add("11*", "B")
@@ -128,7 +109,9 @@ func TestLookup1(t *testing.T) {
 }
 
 func TestLookup2(t *testing.T) {
-	trie := New()
+	t.Parallel()
+
+	trie := trie.New()
 
 	trie.Add("*", "A")
 	trie.Add("1*", "B")
@@ -142,7 +125,9 @@ func TestLookup2(t *testing.T) {
 }
 
 func TestArray1(t *testing.T) {
-	trie := New()
+	t.Parallel()
+
+	trie := trie.New()
 
 	trie.Add("*", "A")
 	trie.Add("1*", "B")
@@ -153,9 +138,11 @@ func TestArray1(t *testing.T) {
 	if nodes[1].NextHop != "A" {
 		t.Fatal("Invalid Node Array")
 	}
+
 	if nodes[3].NextHop != "B" {
 		t.Fatal("Invalid Node Array")
 	}
+
 	if nodes[2].NextHop != "C" {
 		t.Fatal("Invalid Node Array")
 	}

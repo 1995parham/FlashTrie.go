@@ -21,6 +21,7 @@ func main() {
 
 	var routes []route
 
+	// nolint: forbidigo
 	fmt.Print("Routes file name (without .yml extension): ")
 	fmt.Scanf("%s", &f)
 	f += ".yml"
@@ -56,6 +57,7 @@ func main() {
 	shell := ishell.New()
 	shell.Println("Welcome to FlashTrie.go developed by Parham Alvani @ 2018")
 
+	// nolint: exhaustruct
 	shell.AddCmd(&ishell.Cmd{
 		Name: "lookup",
 		Help: "lookup destination in routing table",

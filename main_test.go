@@ -12,6 +12,8 @@ import (
 )
 
 func TestBasic(t *testing.T) {
+	t.Parallel()
+
 	r1, _ := net.ParseNet("192.0.2.1/4")
 	r2, _ := net.ParseNet("192.0.2.1/8")
 	r3, _ := net.ParseNet("172.0.2.1/8")
@@ -41,6 +43,8 @@ func TestBasic(t *testing.T) {
 }
 
 func TestFarkiani(t *testing.T) {
+	t.Parallel()
+
 	testRoutes := []route{
 		{
 			Route:   "1.2.3.4",

@@ -4,40 +4,37 @@ import (
 	dll "github.com/emirpasic/gods/lists/doublylinkedlist"
 )
 
-// Trie represents binary trie for IP route lookup
+// Trie represents binary trie for IP route lookup.
 type Trie struct {
 	Root   *Node
 	Height uint
 	Prefix string // when trie is subtrie this field represents old prefix of root
 }
 
-// New creates new trie
+// New creates new trie.
 func New() *Trie {
 	return &Trie{
 		Root:   new(Node),
 		Height: 1,
+		Prefix: "",
 	}
 }
 
 // NewFromArray creates new trie based on given node array
-// with following structure
+// with following structure.
 //
 //	   i
 //	  / \
 //	2i  2i+1
-//
-// TODO
-func NewFromArray(nodes []Node) *Trie {
-	for i := 0; i < len(nodes); i++ {
-	}
-
-	return nil
+func NewFromArray(_ []Node) *Trie {
+	panic("implement me!")
 }
 
 // Divide divides the binary trie into different levels
 // based on these k-bit subtries. If k = 4 thus, level 0 contains
 // from prefix length 0 to prefix length 7, and so on.
 // Each level contains one or more subtries.
+// nolint: funlen, gocognit, cyclop
 func (t *Trie) Divide(stride uint) [][]*Trie {
 	// How many levels we need?
 	levels := t.Height / stride
@@ -76,12 +73,17 @@ func (t *Trie) Divide(stride uint) [][]*Trie {
 		// BFS loop
 		for !q.Empty() {
 			i, _ := q.Get(0)
-			n := i.(*Node)
+
+			n, ok := i.(*Node)
+			if !ok {
+				panic("")
+			}
 
 			if n.NextHop != "" {
 				// Adds existing prefix into new trie
 				t.Add(n.prefix[len(t.Prefix):]+"*", n.NextHop)
 			}
+
 			if n.Right != nil {
 				if n.Right.height >= stride*(level+1) {
 					tries[level+1] = append(tries[level+1], builder(n.Right, level+1))
@@ -89,6 +91,7 @@ func (t *Trie) Divide(stride uint) [][]*Trie {
 					q.Add(n.Right)
 				}
 			}
+
 			if n.Left != nil {
 				if n.Left.height >= stride*(level+1) {
 					tries[level+1] = append(tries[level+1], builder(n.Left, level+1))
@@ -101,6 +104,7 @@ func (t *Trie) Divide(stride uint) [][]*Trie {
 		}
 
 		t.Height = stride
+
 		return t
 	}
 	tries[0] = []*Trie{
@@ -111,9 +115,10 @@ func (t *Trie) Divide(stride uint) [][]*Trie {
 }
 
 // Add adds new route into trie
-// given route must be in binary regex format e.g. *, 11*
+// given route must be in binary regex format e.g. *, 11*.
 func (t *Trie) Add(route string, nexthop string) {
 	it := t.Root
+
 	for _, b := range route {
 		if b == '*' {
 			it.NextHop = nexthop
@@ -145,15 +150,17 @@ func (t *Trie) Add(route string, nexthop string) {
 }
 
 // Lookup lookups given route in tire and returns finded nexhop or -
-// given route must be in binary represenation e.g. 111111..
+// given route must be in binary representation e.g. 111111..
 func (t *Trie) Lookup(route string) string {
 	it := t.Root
 	nexthop := "-"
+
 	for _, b := range route {
 		if it.NextHop != "" {
 			nexthop = it.NextHop
 		}
 
+		// nolint: nestif
 		if b == '1' {
 			if it.Right != nil {
 				it = it.Right
@@ -168,6 +175,7 @@ func (t *Trie) Lookup(route string) string {
 			}
 		}
 	}
+
 	if it.NextHop != "" {
 		nexthop = it.NextHop
 	}
@@ -199,6 +207,7 @@ func (t *Trie) ToArray() []Node {
 		if c.Left != nil {
 			nodes[2*i] = *c.Left
 		}
+
 		if c.Right != nil {
 			nodes[2*i+1] = *c.Right
 		}
