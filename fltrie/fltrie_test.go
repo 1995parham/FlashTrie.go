@@ -1,18 +1,20 @@
-package fltrie
+package fltrie_test
 
 import (
-	"fmt"
 	"testing"
 
+	"github.com/1995parham/FlashTrie.go/fltrie"
 	"github.com/1995parham/FlashTrie.go/net"
 )
 
 func TestBasic(t *testing.T) {
+	t.Parallel()
+
 	lookups := map[string]string{
 		"192.168.73.10": "B",
 	}
 
-	fltrie := New()
+	fltrie := fltrie.New()
 
 	r1, _ := net.ParseNet("0.0.0.0/31")
 	r2, _ := net.ParseNet("192.168.73.0/24")
@@ -21,7 +23,7 @@ func TestBasic(t *testing.T) {
 	r5, _ := net.ParseNet("192.0.0.0/8")
 	r6, _ := net.ParseNet("172.0.0.0/8")
 
-	fmt.Println(r2)
+	t.Log(r2)
 
 	fltrie.Add(r1, "A")
 	fltrie.Add(r2, "B")

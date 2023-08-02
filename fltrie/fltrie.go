@@ -1,41 +1,45 @@
 package fltrie
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/1995parham/FlashTrie.go/pctrie"
 	"github.com/1995parham/FlashTrie.go/trie"
 )
 
+var ErrAlreadyBuild = errors.New("FLTrie is build already")
+
 type hashElement struct {
 	pctrie  *pctrie.PCTrie
 	nextHop string
 }
 
-// FLTrie represents flash trie structure
+// FLTrie represents flash trie structure.
 type FLTrie struct {
 	trie    *trie.Trie
 	pctries []map[string]*hashElement
 	build   bool
 }
 
-// New creates empty and un-build flash trie
+// New creates empty and un-build flash trie.
 func New() *FLTrie {
 	return &FLTrie{
+		build:   false,
 		trie:    trie.New(),
 		pctries: make([]map[string]*hashElement, 2),
 	}
 }
 
 // Add adds new route into unbuild flash trie
-// given route must be in binary regex format e.g. *, 11*
+// given route must be in binary regex format e.g. *, 11*.
 func (fl *FLTrie) Add(route string, nexthop string) {
 	if !fl.build {
 		fl.trie.Add(route, nexthop)
 	}
 }
 
-// Build builds flash trie three level hierarchy
+// Build builds flash trie three level hierarchy.
 func (fl *FLTrie) Build() error {
 	if fl.trie.Height != 32 {
 		return fmt.Errorf("FLTrie height must be 32 that are greater than %d", fl.trie.Height)
@@ -67,7 +71,7 @@ func (fl *FLTrie) Build() error {
 		return nil
 	}
 
-	return fmt.Errorf("FLTrie is build already")
+	return ErrAlreadyBuild
 }
 
 // Lookup lookups given route and returns found nexhop or -
