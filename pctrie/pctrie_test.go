@@ -1,19 +1,9 @@
-/*
- * +===============================================
- * | Author:        Parham Alvani <parham.alvani@gmail.com>
- * |
- * | Creation Date: 21-12-2017
- * |
- * | File Name:     pctrie_test.go
- * +===============================================
- */
-
 package pctrie
 
 import (
 	"testing"
 
-	"github.com/AUTProjects/FlashTrie.go/trie"
+	"github.com/1995parham/FlashTrie.go/trie"
 )
 
 func TestBasic1(t *testing.T) {
@@ -42,7 +32,6 @@ func TestBasic1(t *testing.T) {
 	if pctrie.Lookup("001") != trie.Lookup("001") {
 		t.Fatalf("Invalid lookup for 100. %s != %s", trie.Lookup("001"), pctrie.Lookup("001"))
 	}
-
 }
 
 func TestBasic2(t *testing.T) {

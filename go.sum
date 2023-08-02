@@ -1,5 +1,3 @@
-github.com/AUTProjects/FlashTrie.go v0.0.0-20180909051514-6946c675256f h1:8c07k5eBe1WR+V3qH2iRRxUBJZb83M4BnPgRUOCX+w4=
-github.com/AUTProjects/FlashTrie.go v0.0.0-20180909051514-6946c675256f/go.mod h1:BhqisCqS8CXWALLh1EtfmZ1Hgo9Q95zLCaEs8qxboTA=
 github.com/abiosoft/ishell v2.0.0+incompatible h1:zpwIuEHc37EzrsIYah3cpevrIc8Oma7oZPxr03tlmmw=
 github.com/abiosoft/ishell v2.0.0+incompatible/go.mod h1:HQR9AqF2R3P4XXpMpI0NAzgHf/aS6+zVXRj14cVk9qg=
 github.com/abiosoft/readline v0.0.0-20180607040430-155bce2042db h1:CjPUSXOiYptLbTdr1RceuZgSFDQ7U15ITERUGrUORx8=

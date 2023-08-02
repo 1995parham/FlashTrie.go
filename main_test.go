@@ -1,30 +1,20 @@
-/*
- * +===============================================
- * | Author:        Parham Alvani <parham.alvani@gmail.com>
- * |
- * | Creation Date: 21-01-2018
- * |
- * | File Name:     main_test.go
- * +===============================================
- */
 package main
 
 import (
-	"io/ioutil"
+	"os"
 	"testing"
 
+	"github.com/1995parham/FlashTrie.go/fltrie"
+	"github.com/1995parham/FlashTrie.go/net"
+	"github.com/1995parham/FlashTrie.go/pctrie"
+	"github.com/1995parham/FlashTrie.go/trie"
 	yaml "gopkg.in/yaml.v2"
-
-	"github.com/AUTProjects/FlashTrie.go/fltrie"
-	"github.com/AUTProjects/FlashTrie.go/pctrie"
-	"github.com/AUTProjects/FlashTrie.go/trie"
-	"github.com/AUTProjects/FlashTrie.go/util"
 )
 
 func TestBasic(t *testing.T) {
-	r1, _ := util.ParseNet("192.0.2.1/4")
-	r2, _ := util.ParseNet("192.0.2.1/8")
-	r3, _ := util.ParseNet("172.0.2.1/8")
+	r1, _ := net.ParseNet("192.0.2.1/4")
+	r2, _ := net.ParseNet("192.0.2.1/8")
+	r3, _ := net.ParseNet("172.0.2.1/8")
 
 	trie := trie.New()
 	trie.Add(r1, "A")
@@ -33,7 +23,7 @@ func TestBasic(t *testing.T) {
 
 	pctrie := pctrie.New(trie, 4)
 
-	var ipAddress = []string{
+	ipAddress := []string{
 		"172.0.1.1",
 		"192.0.1.1",
 		"192.0.0.0",
@@ -42,16 +32,16 @@ func TestBasic(t *testing.T) {
 	}
 
 	for _, ip := range ipAddress {
-		if trie.Lookup(util.ParseIP(ip)) != pctrie.Lookup(util.ParseIP(ip)) {
-			t.Fatalf("Invalid route %s: %s != %s", ip, trie.Lookup(util.ParseIP(ip)), pctrie.Lookup(util.ParseIP(ip)))
+		if trie.Lookup(net.ParseIP(ip)) != pctrie.Lookup(net.ParseIP(ip)) {
+			t.Fatalf("Invalid route %s: %s != %s", ip, trie.Lookup(net.ParseIP(ip)), pctrie.Lookup(net.ParseIP(ip)))
 		}
 
-		t.Logf("%s: %s", ip, trie.Lookup(util.ParseIP(ip)))
+		t.Logf("%s: %s", ip, trie.Lookup(net.ParseIP(ip)))
 	}
 }
 
 func TestFarkiani(t *testing.T) {
-	var testRoutes = []route{
+	testRoutes := []route{
 		{
 			Route:   "1.2.3.4",
 			Nexthop: "Raha",
@@ -74,7 +64,7 @@ func TestFarkiani(t *testing.T) {
 
 	var routes []route
 
-	data, err := ioutil.ReadFile(f)
+	data, err := os.ReadFile(f)
 	if err != nil {
 		t.Fatalf("Reading file %s failed with: %s\n", f, err)
 	}
@@ -89,7 +79,7 @@ func TestFarkiani(t *testing.T) {
 	fltrie := fltrie.New()
 
 	for _, route := range routes {
-		r, err := util.ParseNet(route.Route)
+		r, err := net.ParseNet(route.Route)
 		if err != nil {
 			t.Fatalf("Parsing file %s failed with: %s\n", f, err)
 		}
@@ -102,7 +92,7 @@ func TestFarkiani(t *testing.T) {
 	}
 
 	for _, r := range testRoutes {
-		if l := fltrie.Lookup(util.ParseIP(r.Route)); l != r.Nexthop {
+		if l := fltrie.Lookup(net.ParseIP(r.Route)); l != r.Nexthop {
 			t.Fatalf("%s -> %s is not equal to %s", r.Route, l, r.Nexthop)
 		}
 	}

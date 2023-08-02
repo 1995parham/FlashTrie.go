@@ -1,13 +1,3 @@
-/*
- * +===============================================
- * | Author:        Parham Alvani <parham.alvani@gmail.com>
- * |
- * | Creation Date: 27-11-2017
- * |
- * | File Name:     node.go
- * +===============================================
- */
-
 package trie
 
 // Node represents trie node which may contains a prefix

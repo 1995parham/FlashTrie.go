@@ -1,13 +1,3 @@
-/*
- * +===============================================
- * | Author:        Parham Alvani <parham.alvani@gmail.com>
- * |
- * | Creation Date: 27-11-2017
- * |
- * | File Name:     trie/trie.go
- * +===============================================
- */
-
 package trie
 
 import (
@@ -31,9 +21,11 @@ func New() *Trie {
 
 // NewFromArray creates new trie based on given node array
 // with following structure
-//       i
-//      / \
-//    2i  2i+1
+//
+//	   i
+//	  / \
+//	2i  2i+1
+//
 // TODO
 func NewFromArray(nodes []Node) *Trie {
 	for i := 0; i < len(nodes); i++ {
@@ -185,17 +177,18 @@ func (t *Trie) Lookup(route string) string {
 
 // ToArray returns node array of trie
 // with following structure:
-//       i
-//      / \
-//    2i  2i+1
+//
+//	   i
+//	  / \
+//	2i  2i+1
 //
 // e.g.
-//          1
-//        /  \
-//       2    3
-//     /  \  / \
-//    4   5 6   7
 //
+//	      1
+//	    /  \
+//	   2    3
+//	 /  \  / \
+//	4   5 6   7
 func (t *Trie) ToArray() []Node {
 	nodes := make([]Node, 1<<t.Height)
 

@@ -1,20 +1,10 @@
-/*
- * +===============================================
- * | Author:        Parham Alvani <parham.alvani@gmail.com>
- * |
- * | Creation Date: 22-01-2018
- * |
- * | File Name:     fltrie/fltrie.go
- * +===============================================
- */
-
 package fltrie
 
 import (
 	"fmt"
 
-	"github.com/AUTProjects/FlashTrie.go/pctrie"
-	"github.com/AUTProjects/FlashTrie.go/trie"
+	"github.com/1995parham/FlashTrie.go/pctrie"
+	"github.com/1995parham/FlashTrie.go/trie"
 )
 
 type hashElement struct {

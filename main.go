@@ -1,22 +1,12 @@
-/*
- * +===============================================
- * | Author:        Parham Alvani <parham.alvani@gmail.com>
- * |
- * | Creation Date: 09-11-2017
- * |
- * | File Name:     main.go
- * +===============================================
- */
-
 package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
+	"os"
 
-	"github.com/AUTProjects/FlashTrie.go/fltrie"
-	"github.com/AUTProjects/FlashTrie.go/util"
+	"github.com/1995parham/FlashTrie.go/fltrie"
+	"github.com/1995parham/FlashTrie.go/net"
 	"github.com/abiosoft/ishell"
 	yaml "gopkg.in/yaml.v2"
 )
@@ -35,7 +25,7 @@ func main() {
 	fmt.Scanf("%s", &f)
 	f += ".yml"
 
-	data, err := ioutil.ReadFile(f)
+	data, err := os.ReadFile(f)
 	if err != nil {
 		log.Fatalf("Reading file %s failed with: %s\n", f, err)
 	}
@@ -50,7 +40,7 @@ func main() {
 	fltrie := fltrie.New()
 
 	for _, route := range routes {
-		r, err := util.ParseNet(route.Route)
+		r, err := net.ParseNet(route.Route)
 		if err != nil {
 			log.Fatalf("Parsing file %s failed with: %s\n", f, err)
 		}
@@ -64,14 +54,14 @@ func main() {
 
 	// Run shell
 	shell := ishell.New()
-	shell.Println("Welcome to FlashTrie.go by Parham Alvani @ 2018")
+	shell.Println("Welcome to FlashTrie.go developed by Parham Alvani @ 2018")
 
 	shell.AddCmd(&ishell.Cmd{
 		Name: "lookup",
 		Help: "lookup destination in routing table",
 		Func: func(c *ishell.Context) {
 			for _, arg := range c.Args {
-				ip := util.ParseIP(arg)
+				ip := net.ParseIP(arg)
 				c.Printf("%s -> %s\n", arg, fltrie.Lookup(ip))
 			}
 		},

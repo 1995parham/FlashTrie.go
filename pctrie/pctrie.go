@@ -1,20 +1,10 @@
-/*
- * +===============================================
- * | Author:        Parham Alvani <parham.alvani@gmail.com>
- * |
- * | Creation Date: 16-12-2017
- * |
- * | File Name:     pctrie.go
- * +===============================================
- */
-
 package pctrie
 
 import (
 	"fmt"
 	"strconv"
 
-	"github.com/AUTProjects/FlashTrie.go/trie"
+	"github.com/1995parham/FlashTrie.go/trie"
 )
 
 // PCTrie represents prefix-compressed trie data structure
@@ -25,7 +15,6 @@ type PCTrie struct {
 
 	height   uint // number of bits for routing
 	compBits uint // number of bits are used to identify the corresponding NHI
-
 }
 
 // New creates new prefix-compressed trie
