@@ -5,7 +5,7 @@ go 1.20
 require (
 	github.com/abiosoft/ishell v2.0.0+incompatible
 	github.com/emirpasic/gods v1.12.0
-	gopkg.in/yaml.v2 v2.2.8
+	gopkg.in/yaml.v2 v2.4.0
 )
 
 require (
