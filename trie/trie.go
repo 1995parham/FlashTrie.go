@@ -119,6 +119,7 @@ func (t *Trie) Divide(stride uint) [][]*Trie {
 func (t *Trie) Add(route string, nexthop string) {
 	it := t.Root
 
+	// nolint: nestif
 	for _, b := range route {
 		if b == '*' {
 			it.NextHop = nexthop

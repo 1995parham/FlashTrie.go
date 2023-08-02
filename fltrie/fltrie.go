@@ -2,13 +2,15 @@ package fltrie
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/1995parham/FlashTrie.go/pctrie"
 	"github.com/1995parham/FlashTrie.go/trie"
 )
 
-var ErrAlreadyBuild = errors.New("FLTrie is build already")
+var (
+	ErrAlreadyBuild  = errors.New("FLTrie is build already")
+	ErrInvalidHeight = errors.New("FLTrie height must be 32")
+)
 
 type hashElement struct {
 	pctrie  *pctrie.PCTrie
@@ -23,6 +25,7 @@ type FLTrie struct {
 }
 
 // New creates empty and un-build flash trie.
+// nolint: gomnd
 func New() *FLTrie {
 	return &FLTrie{
 		build:   false,
@@ -40,9 +43,10 @@ func (fl *FLTrie) Add(route string, nexthop string) {
 }
 
 // Build builds flash trie three level hierarchy.
+// nolint: gomnd
 func (fl *FLTrie) Build() error {
 	if fl.trie.Height != 32 {
-		return fmt.Errorf("FLTrie height must be 32 that are greater than %d", fl.trie.Height)
+		return ErrInvalidHeight
 	}
 
 	if !fl.build {
@@ -79,6 +83,7 @@ func (fl *FLTrie) Build() error {
 func (fl *FLTrie) Lookup(route string) string {
 	nh := "-"
 
+	// nolint: nestif
 	if len(route) == 32 && fl.build {
 		// Level 1 (16 bit trie)
 		if nhi := fl.trie.Lookup(route[:16]); nhi != "-" {
