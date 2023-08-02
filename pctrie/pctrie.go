@@ -7,7 +7,7 @@ import (
 	"github.com/1995parham/FlashTrie.go/trie"
 )
 
-// PCTrie represents prefix-compressed trie data structure
+// PCTrie represents prefix-compressed trie data structure.
 type PCTrie struct {
 	Bitmap   []byte
 	NextHops [][]string
@@ -17,7 +17,7 @@ type PCTrie struct {
 	compBits uint // number of bits are used to identify the corresponding NHI
 }
 
-// New creates new prefix-compressed trie
+// New creates new prefix-compressed trie.
 func New(tr *trie.Trie, compSize int) *PCTrie {
 	nodes := tr.ToArray()
 	nhs := make([][]string, 0)
@@ -31,10 +31,12 @@ func New(tr *trie.Trie, compSize int) *PCTrie {
 
 		for t := s; t < s+compSize; t++ {
 			nh[t-s] = tr.Lookup(fmt.Sprintf("%b", t)[1:])
+
 			if nodes[t].NextHop != "" {
 				empty = false
 			}
 		}
+
 		if !empty {
 			bitmap = append(bitmap, '1')
 			nhs = append(nhs, nh)
@@ -74,7 +76,7 @@ func New(tr *trie.Trie, compSize int) *PCTrie {
 // Lookup lookups given route in pc-tire and returns found nexhop or -
 // given route must be in binary representation e.g. 111111..
 // note that this function assume that given route length is greater than
-// original trie height
+// original trie height.
 func (pc *PCTrie) Lookup(route string) string {
 	// access into NextHops array
 	offset := 0
@@ -95,7 +97,9 @@ func (pc *PCTrie) Lookup(route string) string {
 
 		// bitmap access
 		i, _ = strconv.ParseInt(b[:bits-pc.compBits], 2, 0)
+		// nolint: unconvert
 		offset = int(i) + (1 << uint(bits-pc.compBits)) - 1
+
 		if pc.Bitmap[offset] == '1' {
 			indicator = true
 		}
