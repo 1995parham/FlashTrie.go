@@ -44,6 +44,7 @@ func New(tr *trie.Trie, compSize int) *PCTrie {
 			bitmap = append(bitmap, '0')
 			nhs = append(nhs, make([]string, 0))
 		}
+
 		size++
 	}
 

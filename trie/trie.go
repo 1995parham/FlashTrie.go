@@ -129,21 +129,26 @@ func (t *Trie) Add(route string, nexthop string) {
 					it.Left = new(Node)
 					it.Left.prefix = it.prefix + "0"
 					it.Left.height = it.height + 1
+
 					if t.Height < it.Left.height+1 {
 						t.Height = it.Left.height + 1
 					}
 				}
+
 				it = it.Left
 			}
+
 			if b == '1' {
 				if it.Right == nil {
 					it.Right = new(Node)
 					it.Right.prefix = it.prefix + "1"
 					it.Right.height = it.height + 1
+
 					if t.Height < it.Right.height+1 {
 						t.Height = it.Right.height + 1
 					}
 				}
+
 				it = it.Right
 			}
 		}
