@@ -25,7 +25,7 @@ type FLTrie struct {
 }
 
 // New creates empty and un-build flash trie.
-// nolint: gomnd
+// nolint: mnd
 func New() *FLTrie {
 	return &FLTrie{
 		build:   false,
@@ -43,7 +43,7 @@ func (fl *FLTrie) Add(route string, nexthop string) {
 }
 
 // Build builds flash trie three level hierarchy.
-// nolint: gomnd
+// nolint: mnd
 func (fl *FLTrie) Build() error {
 	if fl.trie.Height != 32 {
 		return ErrInvalidHeight

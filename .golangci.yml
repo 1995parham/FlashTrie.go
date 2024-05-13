@@ -20,3 +20,4 @@ linters:
     - varcheck
     - deadcode
     - structcheck
+    - gomnd
