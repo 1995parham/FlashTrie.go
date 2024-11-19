@@ -23,7 +23,11 @@ func main() {
 
 	// nolint: forbidigo
 	fmt.Print("Routes file name (without .yml extension): ")
-	fmt.Scanf("%s", &f)
+
+	if n, err := fmt.Scanf("%s", &f); n != 1 || err != nil {
+		log.Fatalf("invalid input")
+	}
+
 	f += ".yml"
 
 	data, err := os.ReadFile(f)
@@ -31,8 +35,7 @@ func main() {
 		log.Fatalf("Reading file %s failed with: %s\n", f, err)
 	}
 
-	err = yaml.Unmarshal(data, &routes)
-	if err != nil {
+	if err := yaml.Unmarshal(data, &routes); err != nil {
 		log.Fatalf("Parsing file %s failed with: %s\n", f, err)
 	}
 
