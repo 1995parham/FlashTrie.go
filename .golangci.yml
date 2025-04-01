@@ -1,6 +1,7 @@
 ---
+version: "2"
 linters:
-  enable-all: true
+  default: all
   disable:
     - depguard
     # we don't use json with camel-case
@@ -9,15 +10,6 @@ linters:
     # it should improve to support more known patterns
     - varnamelen
     - ireturn
-    # deprecated linters
-    - maligned
-    - scopelint
-    - golint
-    - ifshort
-    - interfacer
-    - exhaustivestruct
-    - nosnakecase
-    - varcheck
-    - deadcode
-    - structcheck
-    - gomnd
+    - revive
+    - wrapcheck
+    - gosec

@@ -49,7 +49,7 @@ func New(tr *trie.Trie, compSize int) *PCTrie {
 	}
 
 	// Eliminate Redundancy
-	for i := 0; i < size/2; i++ {
+	for i := range size / 2 {
 		if bitmap[i] == '1' {
 			if bitmap[2*i+1] == '1' && bitmap[2*i+2] == '1' {
 				bitmap[i] = '0'
