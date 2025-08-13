@@ -4,7 +4,7 @@ echo "- route: 0.0.0.0/31"
 echo "  nexthop: $"
 
 echo "- route: 0.0.0.0/0"
-echo "  nexthop: Kiana"
+echo "  nexthop: Raha"
 
 while read -r line || [[ -n "$line" ]]; do
 	read -ra parsed_line <<<"$line"
