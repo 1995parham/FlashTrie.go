@@ -1,16 +1,31 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-echo "- route: 0.0.0.0/31"
-echo "  nexthop: $"
+# https://stackoverflow.com/questions/3822621/how-to-exit-if-a-command-failed
+set -eu
+set -o pipefail
 
-echo "- route: 0.0.0.0/0"
-echo "  nexthop: Raha"
+root="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-while read -r line || [[ -n "$line" ]]; do
-	read -ra parsed_line <<<"$line"
+main() {
+	if [[ $# -ne 1 ]]; then
+		echo "$0 <filename.yml>"
+		return 1
+	fi
 
-	parsed_linen=${#parsed_line[@]}
+	echo "- route: 0.0.0.0/31"
+	echo "  nexthop: $"
 
-	echo "- route: ${parsed_line[2]}"
-	echo "  nexthop: ${parsed_line[$parsed_linen - 1]}"
-done <"$1"
+	echo "- route: 0.0.0.0/0"
+	echo "  nexthop: Raha"
+
+	while read -r line || [[ -n "$line" ]]; do
+		read -ra parsed_line <<<"$line"
+
+		parsed_linen=${#parsed_line[@]}
+
+		echo "- route: ${parsed_line[2]}"
+		echo "  nexthop: ${parsed_line[$parsed_linen - 1]}"
+	done <"$root/$1"
+}
+
+main "$@"
