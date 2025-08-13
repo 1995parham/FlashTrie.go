@@ -49,6 +49,7 @@ func (t *Trie) Divide(stride uint) [][]*Trie {
 	// and returns trie of that node
 
 	var builder func(root *Node, level uint) *Trie
+
 	builder = func(root *Node, level uint) *Trie {
 		// Corrects root next hop
 		if root.NextHop == "" {

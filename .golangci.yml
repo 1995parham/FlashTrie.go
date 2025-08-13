@@ -13,3 +13,4 @@ linters:
     - revive
     - wrapcheck
     - gosec
+    - noinlineerr
