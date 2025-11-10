@@ -3,6 +3,7 @@ package net
 import (
 	"fmt"
 	"net"
+	"strings"
 )
 
 // ParseNet parse given v4 network into binary string.
@@ -14,15 +15,13 @@ func ParseNet(cidr string) (string, error) {
 	}
 
 	size, _ := ipv4Net.Mask.Size()
-	str := ""
+	str := []byte("")
 
 	for _, octet := range ipv4Net.IP.To4() {
-		str += fmt.Sprintf("%08b", octet)
+		str = fmt.Appendf(str, "%08b", octet)
 	}
 
-	str = str[:size] + "*"
-
-	return str, nil
+	return string(str)[:size] + "*", nil
 }
 
 // ParseIP parse given ip v4 into binary string.
@@ -31,9 +30,12 @@ func ParseIP(ip string) string {
 
 	str := ""
 
+	var strSb34 strings.Builder
 	for _, octet := range ipv4.To4() {
-		str += fmt.Sprintf("%08b", octet)
+		strSb34.WriteString(fmt.Sprintf("%08b", octet))
 	}
+
+	str += strSb34.String()
 
 	return str
 }
