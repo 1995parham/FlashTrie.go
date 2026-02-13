@@ -55,6 +55,7 @@ func TestBasic(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Equal(t, trieFound, pcFound, "Found mismatch for %s", ip)
+
 		if trieFound && pcFound {
 			assert.Equal(t, trieLookup, pcLookup, "Mismatch for %s", ip)
 		}

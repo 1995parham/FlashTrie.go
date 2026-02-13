@@ -8,6 +8,13 @@ import (
 	"github.com/1995parham/FlashTrie.go/fltrie"
 )
 
+const (
+	keyBits       = 128
+	defaultStride = 8
+	compSize      = 2
+	trieDepth     = 2
+)
+
 var (
 	ErrNotIPv6   = errors.New("not an IPv6 address")
 	ErrInvalidIP = errors.New("invalid IP address")
@@ -40,7 +47,7 @@ func (Adapter) Encode(addr netip.Addr) (string, error) {
 
 // KeyBits returns 128 for IPv6.
 func (Adapter) KeyBits() uint {
-	return 128
+	return keyBits
 }
 
 // ParseCIDR converts an IPv6 CIDR string to a binary prefix string for fltrie.Add.
@@ -69,9 +76,9 @@ func ParseCIDR(cidr string) (string, error) {
 // DefaultConfig returns the standard FlashTrie config for IPv6.
 func DefaultConfig() fltrie.Config {
 	return fltrie.Config{
-		KeyBits:   128,
-		Stride:    8,
-		CompSize:  2,
-		TrieDepth: 2,
+		KeyBits:   keyBits,
+		Stride:    defaultStride,
+		CompSize:  compSize,
+		TrieDepth: trieDepth,
 	}
 }

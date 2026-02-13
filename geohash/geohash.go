@@ -7,7 +7,18 @@ import (
 	"github.com/1995parham/FlashTrie.go/fltrie"
 )
 
-const base32Alphabet = "0123456789bcdefghjkmnpqrstuvwxyz"
+const (
+	base32Alphabet = "0123456789bcdefghjkmnpqrstuvwxyz"
+
+	bitsPerChar      = 5
+	defaultPrecision = 12
+	defaultStride    = 5
+	compSize         = 2
+	trieDepth        = 2
+
+	maxLat = 90.0
+	maxLng = 180.0
+)
 
 var (
 	ErrOutOfRange       = errors.New("coordinate out of range")
@@ -17,16 +28,23 @@ var (
 )
 
 // charToIndex maps each base-32 character to its 5-bit index.
-var charToIndex [256]int
+// Initialized once at package load; effectively immutable after that.
+//
+//nolint:gochecknoglobals
+var charToIndex = buildCharIndex()
 
-func init() {
-	for i := range charToIndex {
-		charToIndex[i] = -1
+func buildCharIndex() [256]int {
+	var table [256]int
+
+	for i := range table {
+		table[i] = -1
 	}
 
 	for i, c := range base32Alphabet {
-		charToIndex[c] = i
+		table[c] = i
 	}
+
+	return table
 }
 
 // Coord represents a geographic coordinate.
@@ -45,43 +63,40 @@ func NewAdapter(precision uint) Adapter {
 	return Adapter{precision: precision}
 }
 
+// encodeBit performs one step of the geohash binary subdivision.
+// It returns '1' and narrows to the upper half when val >= mid,
+// or '0' and narrows to the lower half otherwise.
+func encodeBit(val, lo, hi float64) (byte, float64, float64) {
+	mid := (lo + hi) / 2 //nolint:mnd
+
+	if val >= mid {
+		return '1', mid, hi
+	}
+
+	return '0', lo, mid
+}
+
 // Encode converts a coordinate to a binary string of length precision*5.
 func (a Adapter) Encode(c Coord) (string, error) {
 	if a.precision == 0 {
 		return "", ErrZeroPrecision
 	}
 
-	if c.Lat < -90 || c.Lat > 90 || c.Lng < -180 || c.Lng > 180 {
+	if c.Lat < -maxLat || c.Lat > maxLat || c.Lng < -maxLng || c.Lng > maxLng {
 		return "", fmt.Errorf("%w: lat=%f, lng=%f", ErrOutOfRange, c.Lat, c.Lng)
 	}
 
-	totalBits := a.precision * 5
+	totalBits := a.precision * bitsPerChar
 	bits := make([]byte, totalBits)
 
-	lngMin, lngMax := -180.0, 180.0
-	latMin, latMax := -90.0, 90.0
+	lngMin, lngMax := -maxLng, maxLng
+	latMin, latMax := -maxLat, maxLat
 
 	for i := range totalBits {
 		if i%2 == 0 {
-			// even bit: longitude
-			mid := (lngMin + lngMax) / 2
-			if c.Lng >= mid {
-				bits[i] = '1'
-				lngMin = mid
-			} else {
-				bits[i] = '0'
-				lngMax = mid
-			}
+			bits[i], lngMin, lngMax = encodeBit(c.Lng, lngMin, lngMax)
 		} else {
-			// odd bit: latitude
-			mid := (latMin + latMax) / 2
-			if c.Lat >= mid {
-				bits[i] = '1'
-				latMin = mid
-			} else {
-				bits[i] = '0'
-				latMax = mid
-			}
+			bits[i], latMin, latMax = encodeBit(c.Lat, latMin, latMax)
 		}
 	}
 
@@ -90,7 +105,7 @@ func (a Adapter) Encode(c Coord) (string, error) {
 
 // KeyBits returns the total number of bits for this adapter.
 func (a Adapter) KeyBits() uint {
-	return a.precision * 5
+	return a.precision * bitsPerChar
 }
 
 // ParseGeohash converts a geohash string to a binary prefix string for fltrie.Add.
@@ -99,7 +114,7 @@ func ParseGeohash(hash string) (string, error) {
 		return "", ErrEmptyHash
 	}
 
-	bits := make([]byte, 0, len(hash)*5)
+	bits := make([]byte, 0, len(hash)*bitsPerChar)
 
 	for i := range len(hash) {
 		idx := charToIndex[hash[i]]
@@ -108,9 +123,9 @@ func ParseGeohash(hash string) (string, error) {
 		}
 
 		bits = append(bits,
-			'0'+byte((idx>>4)&1),
-			'0'+byte((idx>>3)&1),
-			'0'+byte((idx>>2)&1),
+			'0'+byte((idx>>4)&1), //nolint:mnd
+			'0'+byte((idx>>3)&1), //nolint:mnd
+			'0'+byte((idx>>2)&1), //nolint:mnd
 			'0'+byte((idx>>1)&1),
 			'0'+byte(idx&1),
 		)
@@ -120,12 +135,12 @@ func ParseGeohash(hash string) (string, error) {
 }
 
 // DefaultConfig returns the standard FlashTrie config for geohash lookups.
-// KeyBits=60 (12 chars × 5 bits), Stride=5 (one geohash char).
+// KeyBits=60 (12 chars x 5 bits), Stride=5 (one geohash char).
 func DefaultConfig() fltrie.Config {
 	return fltrie.Config{
-		KeyBits:   60,
-		Stride:    5,
-		CompSize:  2,
-		TrieDepth: 2,
+		KeyBits:   defaultPrecision * bitsPerChar,
+		Stride:    defaultStride,
+		CompSize:  compSize,
+		TrieDepth: trieDepth,
 	}
 }

@@ -8,9 +8,16 @@ import (
 	"github.com/1995parham/FlashTrie.go/fltrie"
 )
 
+const (
+	keyBits       = 32
+	defaultStride = 8
+	compSize      = 2
+	trieDepth     = 2
+)
+
 var (
-	ErrNotIPv4    = errors.New("not an IPv4 address")
-	ErrInvalidIP  = errors.New("invalid IP address")
+	ErrNotIPv4   = errors.New("not an IPv4 address")
+	ErrInvalidIP = errors.New("invalid IP address")
 )
 
 // Adapter implements fltrie.Adapter[netip.Addr] for IPv4 lookups.
@@ -39,7 +46,7 @@ func (Adapter) Encode(addr netip.Addr) (string, error) {
 
 // KeyBits returns 32 for IPv4.
 func (Adapter) KeyBits() uint {
-	return 32
+	return keyBits
 }
 
 // ParseCIDR converts a CIDR string to a binary prefix string for fltrie.Add.
@@ -67,9 +74,9 @@ func ParseCIDR(cidr string) (string, error) {
 // DefaultConfig returns the standard FlashTrie config for IPv4.
 func DefaultConfig() fltrie.Config {
 	return fltrie.Config{
-		KeyBits:   32,
-		Stride:    8,
-		CompSize:  2,
-		TrieDepth: 2,
+		KeyBits:   keyBits,
+		Stride:    defaultStride,
+		CompSize:  compSize,
+		TrieDepth: trieDepth,
 	}
 }

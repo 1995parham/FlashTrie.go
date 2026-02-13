@@ -18,7 +18,7 @@ type PCTrie[V any] struct {
 }
 
 // New creates new prefix-compressed trie.
-// nolint: cyclop
+// nolint: cyclop, funlen
 func New[V any](tr *trie.Trie[V], compSize int) *PCTrie[V] {
 	nodes := tr.ToArray()
 	nhs := make([][]*V, 0)
