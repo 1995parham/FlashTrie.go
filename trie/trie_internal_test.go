@@ -1,29 +1,56 @@
 package trie
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+)
 
 func TestAdd1(t *testing.T) {
 	t.Parallel()
 
-	trie := New()
+	trie := New[string]()
 
 	trie.Add("*", "A")
 
-	if trie.Root.NextHop == "" || trie.Root.prefix != "" {
-		t.Fatal("Invalid Route Insertation: *")
-	}
+	require.NotNil(t, trie.Root.Value, "Invalid Route Insertion: *")
+	assert.Empty(t, trie.Root.prefix)
 
 	trie.Add("11*", "B")
 
-	if trie.Root.Right.Right.NextHop == "" || trie.Root.Right.Right.prefix != "11" {
-		t.Fatal("Invalid Route Insertation: 11*")
-	}
+	require.NotNil(t, trie.Root.Right.Right.Value, "Invalid Route Insertion: 11*")
+	assert.Equal(t, "11", trie.Root.Right.Right.prefix)
+	assert.Equal(t, "1", trie.Root.Right.prefix)
+	assert.Equal(t, uint(3), trie.Height)
+}
 
-	if trie.Root.Right.prefix != "1" {
-		t.Fatalf("Invalid Prefix: 1 != %s", trie.Root.Right.prefix)
-	}
+func TestEmptyTrieLookup(t *testing.T) {
+	t.Parallel()
 
-	if trie.Height != 3 {
-		t.Fatalf("Invalid height: 3 != %d", trie.Height)
-	}
+	trie := New[string]()
+	_, found := trie.Lookup("100")
+	assert.False(t, found)
+}
+
+func TestDuplicateRoutes(t *testing.T) {
+	t.Parallel()
+
+	trie := New[string]()
+	trie.Add("*", "A")
+	trie.Add("*", "B")
+	result, found := trie.Lookup("100")
+	require.True(t, found)
+	assert.Equal(t, "B", result)
+}
+
+func TestToArrayPanicsOnLargeHeight(t *testing.T) {
+	t.Parallel()
+
+	trie := New[string]()
+	trie.Height = 25
+
+	assert.Panics(t, func() {
+		trie.ToArray()
+	})
 }

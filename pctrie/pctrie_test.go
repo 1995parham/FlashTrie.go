@@ -5,33 +5,29 @@ import (
 
 	"github.com/1995parham/FlashTrie.go/pctrie"
 	"github.com/1995parham/FlashTrie.go/trie"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestBasic2(t *testing.T) {
 	t.Parallel()
 
-	trie := trie.New()
+	tr := trie.New[string]()
 
-	trie.Add("*", "A")
-	trie.Add("1*", "B")
-	trie.Add("00*", "C")
-	trie.Add("11*", "D")
-	trie.Add("100*", "E")
+	tr.Add("*", "A")
+	tr.Add("1*", "B")
+	tr.Add("00*", "C")
+	tr.Add("11*", "D")
+	tr.Add("100*", "E")
 
-	pctrie := pctrie.New(trie, 4)
-	if string(pctrie.Bitmap) != "101" {
-		t.Fatalf("Invalid bitmap. 101 != %s", string(pctrie.Bitmap))
-	}
+	pc := pctrie.New[string](tr, 4)
+	assert.Equal(t, "101", pc.Bitmap.String())
 
-	for i, b := range pctrie.Bitmap {
-		if b == '1' {
-			if len(pctrie.NextHops[i]) == 0 {
-				t.Fatalf("Invalid NextHops at %d\n", i)
-			}
+	for i := range pc.Bitmap.Len() {
+		if pc.Bitmap.Get(i) {
+			require.NotEmpty(t, pc.NextHops[i], "Invalid NextHops at %d", i)
 		} else {
-			if len(pctrie.NextHops[i]) != 0 {
-				t.Fatalf("Invalid NextHops at %d\n", i)
-			}
+			require.Empty(t, pc.NextHops[i], "Invalid NextHops at %d", i)
 		}
 	}
 }

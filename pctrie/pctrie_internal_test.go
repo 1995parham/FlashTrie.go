@@ -4,37 +4,56 @@ import (
 	"testing"
 
 	"github.com/1995parham/FlashTrie.go/trie"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestBasic1(t *testing.T) {
 	t.Parallel()
 
-	trie := trie.New()
+	tr := trie.New[string]()
 
-	trie.Add("*", "A")
-	trie.Add("1*", "B")
-	trie.Add("00*", "C")
-	trie.Add("11*", "D")
-	trie.Add("100*", "E")
+	tr.Add("*", "A")
+	tr.Add("1*", "B")
+	tr.Add("00*", "C")
+	tr.Add("11*", "D")
+	tr.Add("100*", "E")
 
-	pctrie := New(trie, 2)
-	if pctrie.Size != 7 {
-		t.Fatalf("Invalid bitmap size. 7 != %d", pctrie.Size)
-	}
+	pc := New[string](tr, 2)
+	assert.Equal(t, 7, pc.Size)
+	assert.Equal(t, uint(1), pc.compBits)
+	assert.Equal(t, "0110010", pc.Bitmap.String())
 
-	if pctrie.compBits != 1 {
-		t.Fatalf("Invalid number of bits are used to identify NHI. 1 != %d", pctrie.compBits)
-	}
+	result, found, err := pc.Lookup("100")
+	require.NoError(t, err)
+	require.True(t, found)
 
-	if string(pctrie.Bitmap) != "0110010" {
-		t.Fatalf("Invalid bitmap. 0110010 != %s", string(pctrie.Bitmap))
-	}
+	trResult, trFound := tr.Lookup("100")
+	require.True(t, trFound)
+	assert.Equal(t, trResult, result)
 
-	if pctrie.Lookup("100") != trie.Lookup("100") {
-		t.Fatalf("Invalid lookup for 100. %s != %s", trie.Lookup("100"), pctrie.Lookup("100"))
-	}
+	result, found, err = pc.Lookup("001")
+	require.NoError(t, err)
+	require.True(t, found)
 
-	if pctrie.Lookup("001") != trie.Lookup("001") {
-		t.Fatalf("Invalid lookup for 100. %s != %s", trie.Lookup("001"), pctrie.Lookup("001"))
+	trResult, trFound = tr.Lookup("001")
+	require.True(t, trFound)
+	assert.Equal(t, trResult, result)
+}
+
+func BenchmarkPCTrieLookup(b *testing.B) {
+	tr := trie.New[string]()
+	tr.Add("*", "A")
+	tr.Add("1*", "B")
+	tr.Add("00*", "C")
+	tr.Add("11*", "D")
+	tr.Add("100*", "E")
+
+	pc := New[string](tr, 2)
+
+	b.ResetTimer()
+
+	for b.Loop() {
+		_, _, _ = pc.Lookup("100")
 	}
 }

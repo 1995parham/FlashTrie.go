@@ -8,9 +8,9 @@ import (
 )
 
 // PCTrie represents prefix-compressed trie data structure.
-type PCTrie struct {
-	Bitmap   []byte
-	NextHops [][]string
+type PCTrie[V any] struct {
+	Bitmap   *Bitmap
+	NextHops [][]*V
 	Size     int // Bitmap size
 
 	height   uint // number of bits for routing
@@ -18,42 +18,56 @@ type PCTrie struct {
 }
 
 // New creates new prefix-compressed trie.
-func New(tr *trie.Trie, compSize int) *PCTrie {
+// nolint: cyclop
+func New[V any](tr *trie.Trie[V], compSize int) *PCTrie[V] {
 	nodes := tr.ToArray()
-	nhs := make([][]string, 0)
-	bitmap := make([]byte, 0)
+	nhs := make([][]*V, 0)
+
+	// Count entries first
 	size := 0
+	for s := compSize; s < len(nodes)-1; s += compSize {
+		size++
+	}
+
+	bm := newBitmap(size)
+	idx := 0
 
 	// All PC-Trie node
 	for s := compSize; s < len(nodes)-1; s += compSize {
 		empty := true
-		nh := make([]string, compSize)
+		nh := make([]*V, compSize)
 
 		for t := s; t < s+compSize; t++ {
-			nh[t-s] = tr.Lookup(fmt.Sprintf("%b", t)[1:])
+			val, found := tr.Lookup(fmt.Sprintf("%b", t)[1:])
+			if found {
+				v := val
+				nh[t-s] = &v
+			}
 
-			if nodes[t].NextHop != "" {
+			if nodes[t].Value != nil {
 				empty = false
 			}
 		}
 
 		if !empty {
-			bitmap = append(bitmap, '1')
+			bm.Set(idx)
+
 			nhs = append(nhs, nh)
 		} else {
-			bitmap = append(bitmap, '0')
-			nhs = append(nhs, make([]string, 0))
+			nhs = append(nhs, make([]*V, 0))
 		}
 
-		size++
+		idx++
 	}
 
 	// Eliminate Redundancy
 	for i := range size / 2 {
-		if bitmap[i] == '1' {
-			if bitmap[2*i+1] == '1' && bitmap[2*i+2] == '1' {
-				bitmap[i] = '0'
-				nhs[i] = make([]string, 0)
+		if bm.Get(i) {
+			// nolint: mnd
+			if bm.Get(2*i+1) && bm.Get(2*i+2) {
+				bm.Clear(i)
+
+				nhs[i] = make([]*V, 0)
 			}
 		}
 	}
@@ -64,8 +78,8 @@ func New(tr *trie.Trie, compSize int) *PCTrie {
 		compBits++
 	}
 
-	return &PCTrie{
-		Bitmap:   bitmap,
+	return &PCTrie[V]{
+		Bitmap:   bm,
 		Size:     size,
 		NextHops: nhs,
 
@@ -74,11 +88,13 @@ func New(tr *trie.Trie, compSize int) *PCTrie {
 	}
 }
 
-// Lookup lookups given route in pc-tire and returns found nexhop or -
-// given route must be in binary representation e.g. 111111..
-// note that this function assume that given route length is greater than
+// Lookup looks up given route in pc-trie and returns found value.
+// Given route must be in binary representation e.g. 111111..
+// Note that this function assumes that given route length is greater than
 // original trie height.
-func (pc *PCTrie) Lookup(route string) string {
+func (pc *PCTrie[V]) Lookup(route string) (V, bool, error) {
+	var zero V
+
 	// access into NextHops array
 	offset := 0
 	// NHI indicator
@@ -93,15 +109,23 @@ func (pc *PCTrie) Lookup(route string) string {
 		b := route[:bits]
 
 		// corresponding NHI
-		i, _ := strconv.ParseInt(b[bits-pc.compBits:], 2, 0)
+		i, err := strconv.ParseInt(b[bits-pc.compBits:], 2, 0)
+		if err != nil {
+			return zero, false, fmt.Errorf("invalid route binary at NHI: %w", err)
+		}
+
 		nhi = int(i)
 
 		// bitmap access
-		i, _ = strconv.ParseInt(b[:bits-pc.compBits], 2, 0)
+		i, err = strconv.ParseInt(b[:bits-pc.compBits], 2, 0)
+		if err != nil {
+			return zero, false, fmt.Errorf("invalid route binary at offset: %w", err)
+		}
+
 		// nolint: unconvert
 		offset = int(i) + (1 << uint(bits-pc.compBits)) - 1
 
-		if pc.Bitmap[offset] == '1' {
+		if pc.Bitmap.Get(offset) {
 			indicator = true
 		}
 
@@ -109,8 +133,12 @@ func (pc *PCTrie) Lookup(route string) string {
 	}
 
 	if !indicator {
-		return "-"
+		return zero, false, nil
 	}
 
-	return pc.NextHops[offset][nhi]
+	if nhi < len(pc.NextHops[offset]) && pc.NextHops[offset][nhi] != nil {
+		return *pc.NextHops[offset][nhi], true, nil
+	}
+
+	return zero, false, nil
 }
