@@ -29,3 +29,23 @@ jobs:
       - uses: codecov/codecov-action@v5
         with:
           files: coverage.out
+
+  benchmark:
+    name: benchmark
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+      - name: Run benchmarks
+        run: go test -bench=. -benchmem -run=^$ -count=5 ./... | tee bench.txt
+      - name: Post results to job summary
+        run: |
+          {
+            echo "## Benchmark Results"
+            echo ""
+            echo '```'
+            cat bench.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
