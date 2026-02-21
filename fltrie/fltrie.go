@@ -3,6 +3,7 @@ package fltrie
 import (
 	"errors"
 	"fmt"
+	"iter"
 
 	"github.com/1995parham/FlashTrie.go/pctrie"
 	"github.com/1995parham/FlashTrie.go/trie"
@@ -101,6 +102,11 @@ func (fl *FLTrie[K, V]) Build() error {
 	}
 
 	return nil
+}
+
+// All returns an iterator over all (prefix, value) pairs stored in the trie.
+func (fl *FLTrie[K, V]) All() iter.Seq2[string, V] {
+	return fl.trie.All()
 }
 
 // Lookup looks up given key and returns found value.

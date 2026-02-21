@@ -41,6 +41,55 @@ func TestBasic1(t *testing.T) {
 	assert.Equal(t, trResult, result)
 }
 
+func TestBitmapOnes(t *testing.T) {
+	t.Parallel()
+
+	bm := newBitmap(10)
+	bm.Set(0)
+	bm.Set(3)
+	bm.Set(7)
+	bm.Set(9)
+
+	var indices []int
+	for idx := range bm.Ones() {
+		indices = append(indices, idx)
+	}
+
+	assert.Equal(t, []int{0, 3, 7, 9}, indices)
+}
+
+func TestBitmapOnesEmpty(t *testing.T) {
+	t.Parallel()
+
+	bm := newBitmap(64)
+
+	count := 0
+	for range bm.Ones() {
+		count++
+	}
+
+	assert.Zero(t, count)
+}
+
+func TestBitmapOnesEarlyBreak(t *testing.T) {
+	t.Parallel()
+
+	bm := newBitmap(10)
+	bm.Set(1)
+	bm.Set(5)
+	bm.Set(8)
+
+	var indices []int
+	for idx := range bm.Ones() {
+		indices = append(indices, idx)
+		if len(indices) == 2 {
+			break
+		}
+	}
+
+	assert.Equal(t, []int{1, 5}, indices)
+}
+
 func BenchmarkPCTrieLookup(b *testing.B) {
 	tr := trie.New[string]()
 	tr.Add("*", "A")

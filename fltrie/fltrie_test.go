@@ -74,6 +74,20 @@ func TestBuildTwice(t *testing.T) {
 	require.ErrorIs(t, err, fltrie.ErrAlreadyBuilt)
 }
 
+func TestAll(t *testing.T) {
+	t.Parallel()
+
+	fl := buildTestFLTrie(t)
+
+	got := make(map[string]string)
+	for prefix, value := range fl.All() {
+		got[prefix] = value
+	}
+
+	// 6 explicit routes + the trie root inherits a value during construction
+	assert.GreaterOrEqual(t, len(got), 6, "should iterate over at least the 6 added routes")
+}
+
 func BenchmarkBuild(b *testing.B) {
 	routes := []struct{ cidr, nh string }{
 		{"0.0.0.0/31", "A"},

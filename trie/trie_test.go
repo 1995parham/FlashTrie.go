@@ -116,6 +116,89 @@ func TestArray1(t *testing.T) {
 	assert.Equal(t, "C", *nodes[2].Value)
 }
 
+func TestAll(t *testing.T) {
+	t.Parallel()
+
+	tr := trie.New[string]()
+
+	tr.Add("*", "A")
+	tr.Add("1*", "B")
+	tr.Add("00*", "C")
+	tr.Add("11*", "D")
+	tr.Add("100*", "E")
+
+	got := make(map[string]string)
+	for prefix, value := range tr.All() {
+		got[prefix] = value
+	}
+
+	assert.Len(t, got, 5)
+	assert.Equal(t, "A", got[""])
+	assert.Equal(t, "B", got["1"])
+	assert.Equal(t, "C", got["00"])
+	assert.Equal(t, "D", got["11"])
+	assert.Equal(t, "E", got["100"])
+}
+
+func TestAllEarlyBreak(t *testing.T) {
+	t.Parallel()
+
+	tr := trie.New[string]()
+	tr.Add("*", "A")
+	tr.Add("1*", "B")
+	tr.Add("0*", "C")
+
+	count := 0
+	for range tr.All() {
+		count++
+		if count == 2 {
+			break
+		}
+	}
+
+	assert.Equal(t, 2, count)
+}
+
+func TestMatches(t *testing.T) {
+	t.Parallel()
+
+	tr := trie.New[string]()
+	tr.Add("*", "A")
+	tr.Add("1*", "B")
+	tr.Add("10*", "C")
+	tr.Add("100*", "E")
+
+	var prefixes []string
+	var values []string
+
+	for prefix, value := range tr.Matches("1001") {
+		prefixes = append(prefixes, prefix)
+		values = append(values, value)
+	}
+
+	require.Len(t, prefixes, 4)
+	assert.Equal(t, []string{"", "1", "10", "100"}, prefixes)
+	assert.Equal(t, []string{"A", "B", "C", "E"}, values)
+}
+
+func TestMatchesPartial(t *testing.T) {
+	t.Parallel()
+
+	tr := trie.New[string]()
+	tr.Add("*", "A")
+	tr.Add("11*", "B")
+
+	var values []string
+
+	for _, value := range tr.Matches("10") {
+		values = append(values, value)
+	}
+
+	// Only root matches; "11*" does not match route "10"
+	require.Len(t, values, 1)
+	assert.Equal(t, "A", values[0])
+}
+
 func BenchmarkAdd(b *testing.B) {
 	for b.Loop() {
 		tr := trie.New[string]()

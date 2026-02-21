@@ -40,8 +40,7 @@ func New[V any](tr *trie.Trie[V], compSize int) *PCTrie[V] {
 		for t := s; t < s+compSize; t++ {
 			val, found := tr.Lookup(fmt.Sprintf("%b", t)[1:])
 			if found {
-				v := val
-				nh[t-s] = &v
+				nh[t-s] = new(val)
 			}
 
 			if nodes[t].Value != nil {

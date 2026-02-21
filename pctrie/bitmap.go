@@ -1,5 +1,10 @@
 package pctrie
 
+import (
+	"iter"
+	"math/bits"
+)
+
 const bitsPerWord = 64
 
 // Bitmap represents a compact bit array using uint64 words.
@@ -35,6 +40,28 @@ func (b *Bitmap) Get(i int) bool {
 // Len returns the number of bits in the bitmap.
 func (b *Bitmap) Len() int {
 	return b.size
+}
+
+// Ones returns an iterator over the indices of all set bits.
+func (b *Bitmap) Ones() iter.Seq[int] {
+	return func(yield func(int) bool) {
+		for i, w := range b.words {
+			for w != 0 {
+				bit := bits.TrailingZeros64(w)
+
+				idx := i*bitsPerWord + bit
+				if idx >= b.size {
+					return
+				}
+
+				if !yield(idx) {
+					return
+				}
+
+				w &= w - 1 // clear lowest set bit
+			}
+		}
+	}
 }
 
 // String returns a binary string representation of the bitmap.

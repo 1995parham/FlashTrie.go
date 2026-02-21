@@ -1,6 +1,9 @@
 package trie
 
-import "fmt"
+import (
+	"fmt"
+	"iter"
+)
 
 // Trie represents binary trie for prefix lookup.
 type Trie[V any] struct {
@@ -42,7 +45,7 @@ func (t *Trie[V]) Divide(stride uint) [][]*Trie[V] {
 		// Corrects root value
 		if root.Value == nil {
 			if val, found := t.Lookup(root.prefix + "*"); found {
-				root.Value = &val
+				root.Value = new(val)
 			}
 		}
 
@@ -170,6 +173,65 @@ func (t *Trie[V]) Lookup(route string) (V, bool) {
 	}
 
 	return result, found
+}
+
+// All returns an iterator over all (prefix, value) pairs in the trie.
+func (t *Trie[V]) All() iter.Seq2[string, V] {
+	return func(yield func(string, V) bool) {
+		var walk func(*Node[V]) bool
+
+		walk = func(n *Node[V]) bool {
+			if n == nil {
+				return true
+			}
+
+			if n.Value != nil {
+				if !yield(n.prefix, *n.Value) {
+					return false
+				}
+			}
+
+			return walk(n.Left) && walk(n.Right)
+		}
+
+		walk(t.Root)
+	}
+}
+
+// Matches returns an iterator over all (prefix, value) pairs that match
+// the given binary route, yielding from shortest to longest prefix.
+func (t *Trie[V]) Matches(route string) iter.Seq2[string, V] {
+	return func(yield func(string, V) bool) {
+		it := t.Root
+
+		if it.Value != nil {
+			if !yield(it.prefix, *it.Value) {
+				return
+			}
+		}
+
+		for _, b := range route {
+			if b == '1' {
+				if it.Right != nil {
+					it = it.Right
+				} else {
+					return
+				}
+			} else {
+				if it.Left != nil {
+					it = it.Left
+				} else {
+					return
+				}
+			}
+
+			if it.Value != nil {
+				if !yield(it.prefix, *it.Value) {
+					return
+				}
+			}
+		}
+	}
 }
 
 // maxToArrayHeight is the maximum trie height allowed for array conversion.
