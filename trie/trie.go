@@ -45,7 +45,7 @@ func (t *Trie[V]) Divide(stride uint) [][]*Trie[V] {
 		// Corrects root value
 		if root.Value == nil {
 			if val, found := t.Lookup(root.prefix + "*"); found {
-				root.Value = new(val)
+				root.Value = &val
 			}
 		}
 
@@ -211,19 +211,18 @@ func (t *Trie[V]) Matches(route string) iter.Seq2[string, V] {
 		}
 
 		for _, b := range route {
+			var next *Node[V]
 			if b == '1' {
-				if it.Right != nil {
-					it = it.Right
-				} else {
-					return
-				}
+				next = it.Right
 			} else {
-				if it.Left != nil {
-					it = it.Left
-				} else {
-					return
-				}
+				next = it.Left
 			}
+
+			if next == nil {
+				return
+			}
+
+			it = next
 
 			if it.Value != nil {
 				if !yield(it.prefix, *it.Value) {

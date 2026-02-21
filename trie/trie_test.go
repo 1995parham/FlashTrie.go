@@ -1,6 +1,7 @@
 package trie_test
 
 import (
+	"maps"
 	"testing"
 
 	"github.com/1995parham/FlashTrie.go/trie"
@@ -127,10 +128,7 @@ func TestAll(t *testing.T) {
 	tr.Add("11*", "D")
 	tr.Add("100*", "E")
 
-	got := make(map[string]string)
-	for prefix, value := range tr.All() {
-		got[prefix] = value
-	}
+	got := maps.Collect(tr.All())
 
 	assert.Len(t, got, 5)
 	assert.Equal(t, "A", got[""])
@@ -168,8 +166,8 @@ func TestMatches(t *testing.T) {
 	tr.Add("10*", "C")
 	tr.Add("100*", "E")
 
-	var prefixes []string
-	var values []string
+	prefixes := make([]string, 0, 4)
+	values := make([]string, 0, 4)
 
 	for prefix, value := range tr.Matches("1001") {
 		prefixes = append(prefixes, prefix)
@@ -188,7 +186,7 @@ func TestMatchesPartial(t *testing.T) {
 	tr.Add("*", "A")
 	tr.Add("11*", "B")
 
-	var values []string
+	values := make([]string, 0, 1)
 
 	for _, value := range tr.Matches("10") {
 		values = append(values, value)

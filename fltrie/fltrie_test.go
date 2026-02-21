@@ -1,6 +1,7 @@
 package fltrie_test
 
 import (
+	"maps"
 	"net/netip"
 	"testing"
 
@@ -79,10 +80,7 @@ func TestAll(t *testing.T) {
 
 	fl := buildTestFLTrie(t)
 
-	got := make(map[string]string)
-	for prefix, value := range fl.All() {
-		got[prefix] = value
-	}
+	got := maps.Collect(fl.All())
 
 	// 6 explicit routes + the trie root inherits a value during construction
 	assert.GreaterOrEqual(t, len(got), 6, "should iterate over at least the 6 added routes")

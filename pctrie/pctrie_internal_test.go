@@ -1,6 +1,7 @@
 package pctrie
 
 import (
+	"slices"
 	"testing"
 
 	"github.com/1995parham/FlashTrie.go/trie"
@@ -50,10 +51,7 @@ func TestBitmapOnes(t *testing.T) {
 	bm.Set(7)
 	bm.Set(9)
 
-	var indices []int
-	for idx := range bm.Ones() {
-		indices = append(indices, idx)
-	}
+	indices := slices.Collect(bm.Ones())
 
 	assert.Equal(t, []int{0, 3, 7, 9}, indices)
 }
