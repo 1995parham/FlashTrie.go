@@ -21,3 +21,9 @@ linters:
       allow-first-in-block: true
       allow-whole-block: false
       branch-max-lines: 2
+  exclusions:
+    rules:
+      # repeated literals in table-driven tests are test data, not real duplication
+      - path: _test\.go
+        linters:
+          - goconst
