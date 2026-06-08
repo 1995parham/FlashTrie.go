@@ -14,3 +14,10 @@ linters:
     - wrapcheck
     - gosec
     - noinlineerr
+    # deprecated since v2.2.0, replaced by wsl_v5 (already in `all`)
+    - wsl
+  settings:
+    wsl_v5:
+      allow-first-in-block: true
+      allow-whole-block: false
+      branch-max-lines: 2
